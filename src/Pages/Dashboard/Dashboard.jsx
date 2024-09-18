@@ -72,7 +72,7 @@ const Dashboard = () => {
       id: 2,
       icon: <UserOutlined className="DashboardIcon" />,
       title: "phòng 211",
-      description: "3.500.000",
+      description: "4.500.000",
     },
     {
       id: 3,
