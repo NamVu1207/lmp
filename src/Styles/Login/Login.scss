@@ -1,0 +1,32 @@
+.LoginWrapper {
+  background-image: url("../../../public/Background.png");
+  height: 100vh;
+  width: 100vw;
+  background-size: cover;
+}
+.LoginInfor {
+  background-color: $secondary_color;
+  // color: var(icin d);
+  height: 50px;
+  font-size: 1.2rem;
+  &:hover,
+  &:active,
+  &:focus,
+  &:focus-within {
+    background-color: transparent;
+  }
+}
+.Col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0px;
+  flex-direction: column;
+}
+.LoginButtonConfirm {
+  width: 100%;
+  height: 40px;
+  font-weight: 600;
+  color: white;
+  background-color: $primary_color;
+}

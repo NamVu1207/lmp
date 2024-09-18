@@ -1,0 +1,20 @@
+.DashboardCardInfo {
+  background: linear-gradient(
+    135deg,
+    rgba(195, 210, 248, 1) 0%,
+    rgba(1, 88, 255, 1) 100%
+  );
+  width: 250px;
+  height: 186px;
+  border-radius: 20px;
+  .DashboardIcon {
+    font-size: 1.4rem;
+    background-color: $primary_color;
+    color: white;
+    padding: 10px;
+    border-radius: 100%;
+  }
+  .DashDashboardTitle {
+    color: white;
+  }
+}

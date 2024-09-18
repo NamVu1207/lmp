@@ -1,0 +1,86 @@
+.SiderWrapper {
+  padding: 0px;
+  padding-top: 8px;
+}
+.SiderTop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0px;
+  img {
+    width: 63px;
+    padding-bottom: 4px;
+  }
+  @mixin siderTitle {
+    display: flex;
+    align-items: self-end;
+    letter-spacing: 3px;
+  }
+  .SiderTitle_secondary {
+    @include siderTitle;
+    color: $primary_color;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .SiderTitle_primary {
+    @include siderTitle;
+    color: $red_color;
+    padding-right: 6px;
+    font-size: 1.2rem;
+    font-weight: 900;
+  }
+}
+.SiderMenu {
+  background-color: transparent;
+  display: flex;
+  align-items: flex-end;
+  flex-direction: column;
+  @mixin menu-item-style {
+    width: $width_menu_item;
+    border-left: 25px solid transparent;
+    margin: 8px 0px;
+    font-size: 1rem;
+    color: $text_primary_color;
+    font-weight: 500;
+    height: 50px;
+    .anticon {
+      font-size: 1.4rem;
+    }
+  }
+  .ant-menu-item-active {
+    border-radius: 0px;
+  }
+  .ant-menu-item {
+    @include menu-item-style;
+  }
+  .ant-menu-sub {
+    box-shadow: inset 0px 3px 6px rgb(216, 216, 216) !important;
+  }
+
+  .ant-menu-submenu {
+    width: $width_menu_item;
+    .ant-menu-submenu-title {
+      @include menu-item-style;
+      width: 100%;
+    }
+    .ant-menu-item {
+      width: 100%;
+    }
+  }
+  .ant-menu-item-selected {
+    overflow: visible;
+    font-weight: 800;
+    color: $primary_color !important;
+    background-color: transparent;
+    ::before {
+      content: "";
+      width: 10px;
+      height: 100%;
+      background-color: $primary_color;
+      border-radius: 4px;
+      position: absolute;
+      left: -25px;
+      top: 0px;
+    }
+  }
+}

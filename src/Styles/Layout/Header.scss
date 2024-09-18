@@ -1,0 +1,58 @@
+.HeaderSearch {
+  border: none;
+  border-bottom: 3px solid rgba($color: $primary_color, $alpha: 1);
+  width: 400px;
+  margin-right: 40px;
+  .ant-input {
+    border-color: transparent;
+    background-color: transparent;
+    color: $primary_color;
+    font-weight: 500;
+    &:hover,
+    &:focus {
+      border-color: transparent;
+      box-shadow: none;
+    }
+    &::placeholder {
+      color: rgba($color: $primary_color, $alpha: 1);
+    }
+  }
+  .ant-input-group-addon {
+    background-color: transparent;
+    .ant-btn {
+      border: none;
+      background-color: transparent;
+      .anticon {
+        font-size: 1.4rem;
+        color: $primary_color;
+      }
+      &:active,
+      &:hover {
+        background-color: transparent;
+      }
+    }
+  }
+}
+.HeaderBtn {
+  background-color: $secondary_color;
+  margin-right: 25px;
+  .anticon {
+    color: $primary_color;
+  }
+}
+.HeaderAcc {
+  .HeaderAccImg {
+    border: 3px solid white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  .HeaderAccName {
+    font-size: 0.8rem;
+    color: $text_primary_color;
+  }
+  .HeaderAccRole {
+    font-size: 0.6rem;
+    color: $text_sencodary_color;
+  }
+}

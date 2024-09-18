@@ -1,0 +1,45 @@
+.rdg {
+  border: none;
+}
+.rdg-header-row .rdg-cell {
+  height: 42px;
+  color: white;
+  padding-block-start: unset !important;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: $primary_color;
+}
+
+// .b-table .rg-header-cell {
+//   justify-content: center;
+//   background: rgba(134, 229, 255, 0.5) !important;
+// }
+
+.b-field {
+  width: 100%;
+}
+
+.b-vertical-divider {
+  height: 5vh;
+  border-color: #ffb13d;
+}
+
+.b-horizontal-divider {
+  margin: 5px 0 5px;
+  border-color: #dededede;
+}
+
+.b-card {
+  .ant-card-body {
+    padding: 18px 30px;
+  }
+  .ant-card-head-title {
+    text-align: center;
+    font-size: 15px;
+    font-weight: bold;
+    color: navy;
+    white-space: break-spaces;
+  }
+}

@@ -1,0 +1,18 @@
+.ant-card {
+    height: 100%;
+    width: 100%;
+    border-radius: 0px;
+    box-shadow: 2px 2px 6px rgb(219, 219, 219);
+    .ant-card-body {
+      padding: 0px;
+      height: 100%;
+    }
+  }
+@import "variable";
+@import "./Dashboard/Dashboard.scss";
+@import "./Layout/Footer.scss";
+@import "./Layout/Header.scss";
+@import "./Layout/Sider.scss";
+@import "./Login/Login.scss";
+@import "./ReactGrid/ReactGrid.scss";
+@import "./VesselSelect/VesselSelect.scss";
