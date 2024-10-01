@@ -23,7 +23,6 @@ import { UserOutlined } from "@ant-design/icons";
 import TransactionOverviewItem from "./TransactionOverviewItem.jsx";
 import VirtualList from "rc-virtual-list";
 import { useOutletContext } from "react-router-dom";
-import Content from "../../Components/Layout/Content.jsx";
 
 const { Title } = Typography;
 const { Search } = Input;
