@@ -60,50 +60,81 @@ const Booking = () => {
       booking_status: 0,
     },
   ];
+  const newItem = {
+    house_id: "",
+    house_name: "",
+    room_name: "",
+    customer_name: "",
+    customer_phone: "",
+    price: 0,
+    booking_date: undefined,
+    target_date: undefined,
+    booking_status: true,
+    isNew: true,
+  };
   const columns = basicRenderColumns([
     {
       key: "id",
       name: "ID",
       width: 60,
-      visible: false,
+      visible: true,
+    },
+    {
+      key: "STT",
+      name: "STT",
+      width: 60,
+    },
+    {
+      key: "house_id",
+      name: "id nhà",
+      type: columnTypes.TextEditor,
+      visible: true,
+      width: 150,
     },
     {
       key: "house_name",
       name: "Nhà",
       type: columnTypes.TextEditor,
-      editable: true,
     },
     {
-      key: "name",
+      key: "room_name",
       name: "Phòng",
       type: columnTypes.TextEditor,
-      editable: true,
     },
     {
       key: "customer_name",
       name: "Khách thuê",
       type: columnTypes.TextEditor,
       editable: true,
+      required: true,
     },
     {
       key: "customer_phone",
       name: "SDT",
       type: columnTypes.TextEditor,
+      editable: true,
+      required: true,
     },
     {
       key: "price",
       name: "Tiền cọc",
       type: columnTypes.TextEditor,
+      editable: true,
+      required: true,
     },
     {
       key: "booking_date",
       name: "ngày đặt cọc",
-      type: columnTypes.TextEditor,
+      type: columnTypes.DatePicker,
+      editable: true,
+      required: true,
     },
     {
       key: "target_date",
       name: "ngày dự kiến đến",
-      type: columnTypes.TextEditor,
+      type: columnTypes.DatePicker,
+      editable: true,
+      required: true,
     },
     {
       key: "booking_status",
@@ -139,7 +170,54 @@ const Booking = () => {
     }
     return setListRoom([]);
   };
-  const handleAddRow = () => {};
+  const CheckValidate = (validate) => {
+    if (validate.validate.length === 0) {
+      message.warning("không có gì thay đổi");
+      return false;
+    }
+    if (!validate.isCheck) {
+      message.warning("vui lòng điền đầy đủ thông tin!");
+      return false;
+    }
+    return true;
+  };
+  const handleAddRow = () => {
+    form1.submit();
+    const obj = form1.getFieldsValue();
+    if (!Object.keys(obj).some((key) => obj[key] === undefined)) {
+      setRows([
+        ...rows,
+        {
+          ...newItem,
+          house_id: obj.house_id,
+          house_name: listHouse.find((item) => item.value === obj.house_id)
+            .label,
+          room_name: obj.room_name,
+        },
+      ]);
+      setIsModalOpen(false);
+    } else message.warning("vui lòng chọn đầy đủ");
+  };
+  const handleSaveData = async () => {
+    try {
+      const validate = gridRef.current?.Validate();
+      if (!CheckValidate(validate)) return;
+      const listRow = rows.filter((obj) =>
+        validate.validate.some((val) => obj.STT === val.STT)
+      );
+      console.log(listRow);
+
+      // const result = await save({ datas: listRow });
+      // if (result.success) {
+      //   result.data.message.map((item) =>
+      //     item.status ? message.success(item.mess) : message.warning(item.mess)
+      //   );
+      //   handleSearch();
+      // }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const buttonConfirm = async (props) => {
     switch (props.type) {
       case "delete":
@@ -149,7 +227,7 @@ const Booking = () => {
         setIsModalOpen(true);
         break;
       case "save":
-        // handleSaveData();
+        handleSaveData();
         break;
       case "export_excel":
         // console.log("exportExcel");
@@ -224,7 +302,7 @@ const Booking = () => {
             <Grid
               ref={gridRef}
               direction="ltr"
-              columnKeySelected="id"
+              columnKeySelected="STT"
               selection={selectionTypes.multi}
               columns={columns}
               rows={rows}
