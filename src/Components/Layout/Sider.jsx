@@ -9,33 +9,39 @@ import { Link } from "react-router-dom";
 const Sider = () => {
   const items = [
     {
-      key: "dashboard",
-      name: "dashboard",
+      key: "Dashboard",
+      name: "Dashboard",
       label: <Link to={"/"}>Tổng quát</Link>,
       icon: <HomeFilled />,
     },
     {
-      key: "Rooms",
-      name: "Rooms",
-      label: <Link to={"/rooms"}>Danh sách trọ</Link>,
+      key: "Room",
+      name: "Room",
+      label: <Link to={"/Room"}>Danh sách trọ</Link>,
       icon: <InteractionFilled />,
     },
     {
-      key: "EW",
-      name: "EW",
-      label: "Thống kê điện-nước",
+      key: "DataEW",
+      name: "DataEW",
+      label: <Link to={"/DataEW"}>Chỉ số điện-nước</Link>,
       icon: <MessageFilled />,
     },
     {
       key: "Rentalfee",
       name: "Rentalfee",
-      label: "Thống kê tiền trọ",
+      label: <Link to={"/Rentalfee"}>Tiền trọ</Link>,
       icon: <MessageFilled />,
     },
     {
-      key: "Operatingfee",
-      name: "Operatingfee",
-      label: "phí vận hành",
+      key: "Booking",
+      name: "Booking",
+      label: <Link to={"/Booking"}>Cọc giữ phòng</Link>,
+      icon: <MessageFilled />,
+    },
+    {
+      key: "Otherfee",
+      name: "Otherfee",
+      label: <Link to={"/Otherfee"}>Phát sinh</Link>,
       icon: <MessageFilled />,
     },
     {
@@ -45,23 +51,31 @@ const Sider = () => {
       icon: <CompassFilled />,
       children: [
         {
-          key: "Users",
-          label: <Link to={"/users"}>Người thuê</Link>,
+          key: "Customer",
+          label: <Link to={"/Customer"}>Người thuê</Link>,
         },
         {
-          key: "Houses",
-          label: <Link to={"/houses"}>Nhà trọ</Link>,
+          key: "House",
+          label: <Link to={"/House"}>Nhà trọ</Link>,
         },
         {
-          key: "typeroom",
-          label: <Link to={"/typeroom"}>Phòng trọ</Link>,
+          key: "ListRoom",
+          label: <Link to={"/ListRoom"}>Phòng trọ</Link>,
+        },
+        {
+          key: "Staff",
+          label: <Link to={"/Staff"}>Nhân viên</Link>,
+        },
+        {
+          key: "Service",
+          label: <Link to={"/Service"}>Dịch vụ</Link>,
         },
       ],
     },
     {
       key: "Help",
       name: "Help",
-      label: "Hỗ trợ",
+      label: <Link to={"/Help"}>Hỗ trợ</Link>,
       icon: <MessageFilled />,
     },
   ];
@@ -72,7 +86,9 @@ const Sider = () => {
         <Link className="SiderTop" to={"/"}>
           <Flex>
             <Typography className="SiderTitle_primary">L</Typography>
-            <Typography className="SiderTitle_secondary">odging houses</Typography>
+            <Typography className="SiderTitle_secondary">
+              odging houses
+            </Typography>
           </Flex>
         </Link>
       </Col>

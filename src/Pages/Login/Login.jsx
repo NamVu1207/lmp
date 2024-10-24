@@ -18,7 +18,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-// import { auth } from "../../services";
+import { auth } from "../../services";
 
 const { Title } = Typography;
 const Login = () => {
@@ -33,10 +33,8 @@ const Login = () => {
   const handleSubmit = async (e) => {
     setIsLoading(true);
     try {
-      // const result = await auth.Login(e);
-      // if (result) navigate("/");
-      if (e.username === "admin" && e.password === "123") navigate("/");
-      else message.warning("password or account is incorrect");
+      const result = await auth.Login(e);
+      if (result) navigate("/");
     } catch (error) {
       console.log(error);
     }

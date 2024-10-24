@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Row,
   Col,
@@ -9,301 +10,237 @@ import {
   Typography,
   Divider,
   Menu,
+  Form,
+  Empty,
+  message,
+  Modal,
 } from "antd";
-
-import React from "react";
-
+import { ExclamationCircleFilled } from "@ant-design/icons";
 import { useOutletContext } from "react-router-dom";
 import ListRoom from "./ListRoom";
+import ModalCreateHouse from "../../Components/Modal/ModalCreateHouse";
+import { Filter, filterType } from "../../Components/Fillter";
+
+import { addhouse, addroom, deleteHouse, load } from "../../services/room";
 
 const numberRoomRented = 14;
 
-const MenuItem = [
-  {
-    house_id: "H01",
-    house_name: "green house",
-    total_rented: 7,
-    total_not_rented: 3,
-    rooms: [
-      {
-        room_id: "A1",
-        room_name: "phòng A01",
-        max_capacity: 4,
-        floor_number: 2,
-        room_type: 1,
-        room_area: 45,
-        is_rented: 0,
-        room_price: 4500000,
-        room_price_inContract: "",
-        room_description: "phòng có ban công rộng, cạnh lối thoát hiểm",
-        customer_name: "",
-      },
-      {
-        room_id: "A2",
-        room_name: "phòng A02",
-        max_capacity: 4,
-        floor_number: 1,
-        room_type: 1,
-        room_area: 45,
-        is_rented: 1,
-        room_price: 4500000,
-        room_price_inContract: 4500000,
-        room_description: "phòng có ban công rộng, cạnh lối thoát hiểm",
-        customer_name: "Nguyễn Văn A",
-      },
-    ],
-  },
-  {
-    house_id: "H02",
-    house_name: "red house",
-    total_rented: 6,
-    total_not_rented: 3,
-    rooms: [
-      {
-        room_id: "B1",
-        room_name: "phòng 01",
-        max_capacity: 4,
-        floor_number: 2,
-        room_type: 1,
-        room_area: 45,
-        is_rented: 0,
-        room_price: 4500000,
-        room_price_inContract: "",
-        room_description: "phòng có ban công rộng, cạnh lối thoát hiểm",
-        customer_name: "",
-      },
-      {
-        room_id: "B2",
-        room_name: "phòng 02",
-        max_capacity: 4,
-        floor_number: 1,
-        room_type: 1,
-        room_area: 45,
-        is_rented: 1,
-        room_price: 4500000,
-        room_price_inContract: 4200000,
-        room_description: "phòng có ban công rộng, cạnh lối thoát hiểm",
-        customer_name: "Nguyễn Văn B",
-      },
-      {
-        room_id: "B3",
-        room_name: "phòng 03",
-        max_capacity: 2,
-        floor_number: 1,
-        room_type: 1,
-        room_area: 22,
-        is_rented: 1,
-        room_price: 3500000,
-        room_price_inContract: 3200000,
-        room_description: "phòng có ban công rộng, cạnh lối thoát hiểm",
-        customer_name: "Nguyễn Văn C",
-      },
-      {
-        room_id: "B1",
-        room_name: "phòng 01",
-        max_capacity: 4,
-        floor_number: 2,
-        room_type: 1,
-        room_area: 45,
-        is_rented: 0,
-        room_price: 4500000,
-        room_price_inContract: "",
-        room_description: "phòng có ban công rộng, cạnh lối thoát hiểm",
-        customer_name: "",
-      },
-      {
-        room_id: "B2",
-        room_name: "phòng 02",
-        max_capacity: 4,
-        floor_number: 1,
-        room_type: 1,
-        room_area: 45,
-        is_rented: 1,
-        room_price: 4500000,
-        room_price_inContract: 4200000,
-        room_description: "phòng có ban công rộng, cạnh lối thoát hiểm",
-        customer_name: "Nguyễn Văn B",
-      },
-      {
-        room_id: "B3",
-        room_name: "phòng 03",
-        max_capacity: 2,
-        floor_number: 1,
-        room_type: 1,
-        room_area: 22,
-        is_rented: 1,
-        room_price: 3500000,
-        room_price_inContract: 3200000,
-        room_description: "phòng có ban công rộng, cạnh lối thoát hiểm",
-        customer_name: "Nguyễn Văn C",
-      },
-      {
-        room_id: "B1",
-        room_name: "phòng 01",
-        max_capacity: 4,
-        floor_number: 2,
-        room_type: 1,
-        room_area: 45,
-        is_rented: 0,
-        room_price: 4500000,
-        room_price_inContract: "",
-        room_description: "phòng có ban công rộng, cạnh lối thoát hiểm",
-        customer_name: "",
-      },
-      {
-        room_id: "B2",
-        room_name: "phòng 02",
-        max_capacity: 4,
-        floor_number: 1,
-        room_type: 1,
-        room_area: 45,
-        is_rented: 1,
-        room_price: 4500000,
-        room_price_inContract: 4200000,
-        room_description: "phòng có ban công rộng, cạnh lối thoát hiểm",
-        customer_name: "Nguyễn Văn B",
-      },
-      {
-        room_id: "B3",
-        room_name: "phòng 03",
-        max_capacity: 2,
-        floor_number: 1,
-        room_type: 1,
-        room_area: 22,
-        is_rented: 1,
-        room_price: 3500000,
-        room_price_inContract: 3200000,
-        room_description: "phòng có ban công rộng, cạnh lối thoát hiểm",
-        customer_name: "Nguyễn Văn C",
-      },
-    ],
-  },
-];
-
 const ListOfRentals = () => {
+  const [form] = Form.useForm();
   const [title, setTitle] = useOutletContext();
-  const [array, setArray] = React.useState([]);
-  const [menuKey, setMenuKey] = React.useState();
-  const [houseSelected, setHouseSelected] = React.useState([]);
+  const [menuItem, setMenuItem] = React.useState([]);
+  const [menuKey, setMenuKey] = React.useState("");
+  const [houseSelected, setHouseSelected] = React.useState({});
   const [totalRented, setTotalRented] = React.useState();
   const [totalNotRented, setTotalNotRented] = React.useState();
-
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [listHouse, setListHouse] = React.useState([]);
   React.useEffect(() => {
-    setTitle("Phòng trọ");
+    setTitle("DANH SÁCH TRỌ");
   }, []);
 
   React.useEffect(() => {
+    handleSearch();
+  }, []);
+  React.useEffect(() => {
     setTotalRented(
-      MenuItem.reduce((acc, item) => {
-        return acc + item.total_rented;
+      listHouse.reduce((acc, item) => {
+        return acc + Number(item.total_rented);
       }, 0)
     );
     setTotalNotRented(
-      MenuItem.reduce((acc, item) => {
-        return acc + item.total_not_rented;
+      listHouse.reduce((acc, item) => {
+        return acc + Number(item.total_not_rented);
       }, 0)
     );
-    setArray(convertArray(MenuItem));
-    setMenuKey(MenuItem[0].house_id);
-    setHouseSelected(MenuItem[0]);
-  }, []);
+    if (listHouse.length > 0) {
+      setMenuItem(convertMenuItem(listHouse));
+      const isMenuKey = listHouse.some((item) => item.house_id === menuKey);
+      if (menuKey === "" || !isMenuKey) {
+        setMenuKey(listHouse[0].house_id);
+        setHouseSelected(listHouse[0]);
+      } else
+        setHouseSelected(listHouse.find((item) => item.house_id === menuKey));
+    } else setMenuItem([]);
+  }, [listHouse]);
 
-  const convertArray = (arr) => {
+  const convertMenuItem = (arr) => {
     return arr.map((item) => ({
-      label: item.house_name,
+      label: `${item.house_id}-${item.house_name}`,
       key: item.house_id,
     }));
   };
 
-  const handleChange = () => {};
+  const handleAddHouse = async (val) => {
+    const result = await addhouse([val]);
+    if (result.success) {
+      message.success(result.message);
+      handleSearch();
+    } else message.warning(result.message);
+  };
+
+  const handleDeleteHouse = async () => {
+    const result = await deleteHouse(Number(menuKey));
+    if (result.success) {
+      message.success(result.message);
+      handleSearch();
+    } else message.warning(result.message);
+  };
+
+  const handleSearch = async () => {
+    try {
+      const data = form.getFieldsValue();
+      const result = await load(data);
+      if (result.data.length !== 0) {
+        setListHouse(result.data);
+      } else setListHouse([]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const onClick = (e) => {
     setMenuKey(e.key);
-    setHouseSelected(MenuItem.find((item) => item.house_id === e.key));
+    setHouseSelected(listHouse.find((item) => item.house_id === e.key));
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const showDeleteConfirm = () => {
+    Modal.confirm({
+      title: "Cảnh báo",
+      icon: <ExclamationCircleFilled />,
+      content: "Thực hiện sẽ xóa các dự liệu có liên quan",
+      okText: "Xác nhận",
+      okType: "danger",
+      cancelText: "hủy",
+      onOk() {
+        handleDeleteHouse();
+      },
+      onCancel() {
+        return;
+      },
+    });
   };
 
   return (
-    <Row gutter={[8, 16]}>
-      <Col span={24}>
-        <Card style={{ padding: "12px" }}>
-          <Row gutter={[8, 8]}>
-            <Col span={24}>
-              <Flex gap="middle">
-                <Select
-                  placeholder="trạng thái phòng"
-                  style={{
-                    width: 160,
-                  }}
-                  allowClear
-                  onChange={handleChange}
-                  options={[
+    <>
+      <Row gutter={[8, 16]}>
+        <Col span={24}>
+          <Card style={{ padding: "12px" }}>
+            <Row gutter={[8, 8]}>
+              <Col span={24}>
+                <Filter
+                  form={form}
+                  onSearch={handleSearch}
+                  items={[
                     {
-                      value: "0",
-                      label: "chưa thuê",
+                      type: filterType.select,
+                      config: {
+                        name: "is_rented",
+                        options: [
+                          {
+                            value: "available",
+                            label: "chưa thuê",
+                          },
+                          {
+                            value: "rented",
+                            label: "đã thuê",
+                          },
+                        ],
+                        placeholder: "trạng thái phòng",
+                      },
                     },
                     {
-                      value: "1",
-                      label: "đã thuê",
+                      type: filterType.select,
+                      config: {
+                        name: "room_status",
+                        options: [
+                          {
+                            value: 0,
+                            label: "chưa thanh toán",
+                          },
+                          {
+                            value: 1,
+                            label: "đã thanh toán",
+                          },
+                        ],
+                        placeholder: "trạng thái phí",
+                      },
+                    },
+                    {
+                      type: filterType.input,
+                      config: {
+                        name: "room_name",
+                        placeholder: "Tên phòng",
+                      },
                     },
                   ]}
                 />
-                <Select
-                  placeholder="trạng thái phí"
-                  style={{
-                    width: 160,
-                  }}
-                  allowClear
-                  onChange={handleChange}
-                  options={[
-                    {
-                      value: "0",
-                      label: "chưa thanh toán",
-                    },
-                    {
-                      value: "1",
-                      label: "đã thanh toán",
-                    },
-                  ]}
+              </Col>
+              <Col>
+                <Flex align="center">
+                  <Typography> đã thuê: {totalRented}</Typography>
+                  <Divider type="vertical" />
+                  <Typography> chưa thuê: {totalNotRented}</Typography>
+                  <Divider type="vertical" />
+                  <Typography> chưa thu phí: {numberRoomRented}</Typography>
+                </Flex>
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+        <Col span={24}>
+          <Card style={{ padding: "12px" }}>
+            <Row>
+              <Col span={12}>
+                <Menu
+                  onClick={onClick}
+                  selectedKeys={[menuKey]}
+                  mode="horizontal"
+                  items={menuItem}
                 />
-                <Input
-                  style={{ width: "160px" }}
-                  placeholder="Tên phòng"
-                ></Input>
-                <Button type="primary" onClick={() => console.log(array)}>
-                  Tìm kiếm
-                </Button>
-              </Flex>
-            </Col>
-            <Col>
-              <Flex align="center">
-                <Typography> đã thuê: {totalRented}</Typography>
-                <Divider type="vertical" />
-                <Typography> chưa thuê: {totalNotRented}</Typography>
-                <Divider type="vertical" />
-                <Typography> chưa thu phí: {numberRoomRented}</Typography>
-              </Flex>
-            </Col>
-          </Row>
-        </Card>
-      </Col>
-      <Col span={24}>
-        <Card style={{ padding: "12px" }}>
-          <Row>
-            <Col span={24}>
-              <Menu
-                onClick={onClick}
-                selectedKeys={[menuKey]}
-                mode="horizontal"
-                items={array}
-              />
-            </Col>
-            <Col span={24}>
-              <ListRoom house={houseSelected}></ListRoom>
-            </Col>
-          </Row>
-        </Card>
-      </Col>
-    </Row>
+              </Col>
+              <Col span={12}>
+                <Flex justify="end" align="center">
+                  <Button type="primary" onClick={showModal}>
+                    Thêm nhà
+                  </Button>
+                  <Button
+                    style={{ marginLeft: "4px" }}
+                    type="primary"
+                    danger
+                    onClick={showDeleteConfirm}
+                  >
+                    Xóa nhà
+                  </Button>
+                </Flex>
+              </Col>
+              <Col span={24}>
+                {listHouse.length === 0 ? (
+                  <Empty />
+                ) : (
+                  <ListRoom
+                    house={houseSelected}
+                    handleLoad={handleSearch}
+                  ></ListRoom>
+                )}
+              </Col>
+            </Row>
+          </Card>
+        </Col>
+      </Row>
+      <ModalCreateHouse
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        handleAddHouse={handleAddHouse}
+      />
+    </>
   );
 };
 

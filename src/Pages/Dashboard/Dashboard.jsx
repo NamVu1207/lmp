@@ -22,7 +22,7 @@ import { UserOutlined } from "@ant-design/icons";
 // import { basicRenderColumns } from "../../utils/dataTable.utils.js";
 import TransactionOverviewItem from "./TransactionOverviewItem.jsx";
 import VirtualList from "rc-virtual-list";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -31,6 +31,7 @@ const Dashboard = () => {
   const onFocus = () => {};
   const gridRef = createRef();
   const vesselSelectRef = useRef();
+  const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [data, setData] = useState([]);
   const [form] = Form.useForm();
@@ -38,6 +39,10 @@ const Dashboard = () => {
 
   React.useEffect(() => {
     setTitle("TỔNG QUÁT");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+    }
   }, []);
 
   const OverviewItem = [
@@ -102,7 +107,7 @@ const Dashboard = () => {
           <Row gutter={[0, 12]}>
             <Col span={24}>
               <Title style={{ margin: "0px", fontWeight: "bold" }} level={4}>
-                Sơ lược 
+                Sơ lược
               </Title>
             </Col>
             <Col span={24}>

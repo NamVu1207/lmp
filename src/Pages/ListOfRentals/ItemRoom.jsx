@@ -5,6 +5,7 @@ import {
   Col,
   Divider,
   Image,
+  message,
   Modal,
   Row,
   Typography,
@@ -14,27 +15,25 @@ import {
   DollarOutlined,
   TeamOutlined,
   UserOutlined,
+  ExclamationCircleFilled,
 } from "@ant-design/icons";
 import ModalDetalRoom from "../../Components/Modal/ModalDetalRoom";
+import ModalCreateContract from "../../Components/Modal/ModalCreateContract";
+import { cancelrent, deleteRoom } from "../../services/room";
 
-const ItemRoom = ({ room }) => {
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+const ItemRoom = ({ room, handleLoad }) => {
+  const [isDetailOpen, setIsDetailOpen] = React.useState(false);
+  const [isContractOpen, setIsContractOpen] = React.useState(false);
   const [info, setInfo] = React.useState([]);
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
   React.useEffect(() => {
     setInfo([
       {
         icon: <HomeOutlined />,
-        label: room.room_name,
+        label: room.name,
       },
       {
         icon: <TeamOutlined />,
-        label: room.max_capacity,
+        label: room.capacity,
       },
       {
         icon: <UserOutlined />,
@@ -42,20 +41,56 @@ const ItemRoom = ({ room }) => {
       },
       {
         icon: <DollarOutlined />,
-        label: room.is_rented ? room.room_price_inContract : room.room_price,
+        label: room.is_rented === "rented" ? room.price_inContract : room.price,
       },
     ]);
   }, [room]);
+
+  const handleDeleteRoom = async () => {
+    const result = await deleteRoom(room.id);
+    if (result.success) {
+      message.success(result.message);
+      handleLoad();
+    } else message.warning(result.message);
+  };
+
+  const handleCancelRent = async () => {
+    const result = await cancelrent(room.id);
+    if (result.success) {
+      message.success(result.message);
+      handleLoad();
+    } else message.warning(result.message);
+  };
+
+  const showDeleteConfirm = (onOk) => {
+    Modal.confirm({
+      title: "Cảnh báo",
+      icon: <ExclamationCircleFilled />,
+      content: "Thực hiện sẽ xóa các dự liệu có liên quan",
+      okText: "Xác nhận",
+      okType: "danger",
+      cancelText: "hủy",
+      onOk() {
+        onOk();
+      },
+      onCancel() {
+        return;
+      },
+    });
+  };
+
   return (
     <>
       <Card
         style={{
-          backgroundColor: room.is_rented ? "#a7ecdc" : "white",
+          backgroundColor: room.is_rented === "rented" ? "#a7ecdc" : "white",
           height: "fit-content",
           padding: "12px",
           borderRadius: "8px",
         }}
-        onClick={showModal}
+        onClick={() => {
+          setIsDetailOpen(true);
+        }}
       >
         <Row gutter={[8, 8]}>
           {info.map((item, index) => {
@@ -73,19 +108,61 @@ const ItemRoom = ({ room }) => {
               </Col>
             );
           })}
+          <Divider style={{ borderColor: "gray", margin: "16px 0" }} />
+          <Col span={12}>
+            {room.is_rented === "rented" ? (
+              <Button
+                type="primary"
+                style={{ width: "100%", backgroundColor: "#6f27db" }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  showDeleteConfirm(handleCancelRent);
+                }}
+              >
+                ngừng thuê
+              </Button>
+            ) : (
+              <Button
+                style={{ width: "100%" }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsContractOpen(true);
+                }}
+              >
+                Làm hợp đồng
+              </Button>
+            )}
+          </Col>
+          <Col span={12}>
+            <Button
+              type="primary"
+              style={{ width: "100%" }}
+              danger
+              onClick={(e) => {
+                e.stopPropagation();
+                showDeleteConfirm(handleDeleteRoom);
+              }}
+            >
+              xóa phòng
+            </Button>
+          </Col>
         </Row>
-        <Divider style={{ borderColor: "gray" }} />
-        <Button
-          style={{ width: "100%" }}
-          disabled={room.is_rented ? true : false}
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          Làm hợp đồng
-        </Button>
       </Card>
-      <ModalDetalRoom room={room} isOpen={isModalOpen} onClose={closeModal} />
+      <ModalDetalRoom
+        room={room}
+        isOpen={isDetailOpen}
+        onClose={() => {
+          setIsDetailOpen(false);
+        }}
+      />
+      <ModalCreateContract
+        room={room}
+        isOpen={isContractOpen}
+        onClose={() => {
+          setIsContractOpen(false);
+        }}
+        handleLoad={handleLoad}
+      />
     </>
   );
 };
