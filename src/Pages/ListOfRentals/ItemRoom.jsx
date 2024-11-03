@@ -83,7 +83,12 @@ const ItemRoom = ({ room, handleLoad }) => {
     <>
       <Card
         style={{
-          backgroundColor: room.is_rented === "rented" ? "#a7ecdc" : "white",
+          backgroundColor:
+            room.is_rented === "rented"
+              ? "#a7ecdc"
+              : room.is_rented === "booking"
+              ? "#ebc034"
+              : "white",
           height: "fit-content",
           padding: "12px",
           borderRadius: "8px",

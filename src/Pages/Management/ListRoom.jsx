@@ -1,16 +1,4 @@
-import {
-  Button,
-  Card,
-  Col,
-  DatePicker,
-  Divider,
-  Flex,
-  Input,
-  Menu,
-  Row,
-  Select,
-  Typography,
-} from "antd";
+import { Card, Col, Divider, Flex, Form, message, Row, Typography } from "antd";
 import React from "react";
 import { useOutletContext } from "react-router-dom";
 import Grid, {
@@ -19,119 +7,328 @@ import Grid, {
   selectionTypes,
 } from "../../Components/DataGrid/index.jsx";
 import { basicRenderColumns } from "../../utils/dataTable.utils.jsx";
+import { Filter, filterType } from "../../Components/Fillter/index.jsx";
+import ToolBar, {
+  toolBarButtonTypes,
+} from "../../Components/Toolbar/index.jsx";
+import {
+  load,
+  gethouse,
+  getserv,
+  save,
+  loadrs,
+  del,
+} from "../../services/listroom.js";
 
 const ListRoom = () => {
+  const [title, setTitle] = useOutletContext();
   const onFocus = () => {};
   const gridRef = React.createRef();
+  const gridRefDetail = React.createRef();
+  const [form] = Form.useForm();
   const [rows, setRows] = React.useState([]);
-  const [title, setTitle] = useOutletContext();
-  const Info = [
-    {
-      id: 1,
-      house_name: "green house",
-      name: "phòng 01",
-      customer_name: "Nguyen Van A",
-      elec_start: 12,
-      elec_end: 23,
-      water_start: 1,
-      water_end: 12,
-      reading_date: "2024-10-05",
-      elec_cost: 4000,
-      water_cost: 2000,
-    },
-    {
-      id: 2,
-      house_name: "green house",
-      name: "phòng 01",
-      customer_name: "Nguyen Van A",
-      elec_start: 12,
-      elec_end: 23,
-      water_start: 1,
-      water_end: 12,
-      reading_date: "2024-11-05",
-      elec_cost: 4000,
-      water_cost: 2000,
-    },
-  ];
+  const [rowDetail, setRowDetail] = React.useState([]);
+  const [listHouse, setListHouse] = React.useState([]);
+  const [listServ, setListServ] = React.useState([]);
+  const [optServ, setOptServ] = React.useState([]);
+  const [roomServ, setRoomServ] = React.useState([]);
+  const newItem = {
+    id: "",
+    room_id: "",
+    service_id: "",
+    amount: 0,
+    active: true,
+    isNew: true,
+  };
   const columns = basicRenderColumns([
+    {
+      key: "STT",
+      name: "STT",
+      width: 60,
+    },
     {
       key: "id",
       name: "ID",
-      width: 60,
-      visible: false,
+      visible: true,
+    },
+    {
+      key: "house_id",
+      name: "house_id",
+      type: columnTypes.TextEditor,
+      visible: true,
     },
     {
       key: "house_name",
       name: "Nhà",
       type: columnTypes.TextEditor,
+    },
+    {
+      key: "room_name",
+      name: "Tên phòng",
+      type: columnTypes.TextEditor,
+      width: 120,
       editable: true,
+      required: true,
     },
     {
-      key: "name",
-      name: "Phòng",
+      key: "cus_name",
+      name: "Tên khách thuê",
+      type: columnTypes.TextEditor,
+    },
+    {
+      key: "cccd",
+      name: "cccd",
+      type: columnTypes.TextEditor,
+    },
+    {
+      key: "current_capacity",
+      name: "Số người hiện tại",
+      width: 160,
+      type: columnTypes.TextEditor,
+    },
+    {
+      key: "capacity",
+      name: "Số người tối đa",
+      width: 160,
       type: columnTypes.TextEditor,
       editable: true,
+      required: true,
     },
     {
-      key: "customer_name",
-      name: "Khách thuê",
+      key: "floor",
+      name: "Tầng",
+      width: 120,
       type: columnTypes.TextEditor,
       editable: true,
+      required: true,
     },
     {
-      key: "elec_start",
-      name: "cs diện đầu",
+      key: "area",
+      name: "Diện tích (m2)",
+      width: 150,
       type: columnTypes.TextEditor,
+      editable: true,
+      required: true,
     },
     {
-      key: "elec_end",
-      name: "cs diện cuối",
+      key: "price",
+      name: "gia thuê (vnd)",
       type: columnTypes.TextEditor,
+      editable: true,
+      required: true,
     },
     {
-      key: "water_start",
-      name: "cs nước đầu",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "water_end",
-      name: "cs nước cuối",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "elec_cost",
-      name: "Tiền điện",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "water_cost",
-      name: "Tiền nước",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "month",
-      name: "Tháng",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "year",
-      name: "năm",
+      key: "is_rented",
+      name: "trạng thái",
       type: columnTypes.TextEditor,
     },
   ]);
+  const columnDetail = basicRenderColumns([
+    {
+      key: "STT",
+      name: "STT",
+      width: 60,
+    },
+    {
+      key: "id",
+      name: "ID",
+      visible: true,
+    },
+    {
+      key: "room_id",
+      name: "room_id",
+      type: columnTypes.TextEditor,
+      visible: true,
+    },
+    {
+      key: "service_id",
+      name: "Tên dịch vụ",
+      type: columnTypes.Select,
+      options: optServ,
+      editable: true,
+      required: true,
+    },
+    {
+      key: "amount",
+      name: "Số lượng",
+      type: columnTypes.TextEditor,
+      editable: true,
+      required: true,
+    },
+    {
+      key: "active",
+      name: "trạng thái",
+      type: columnTypes.Checkbox,
+      editable: true,
+    },
+  ]);
+
   React.useEffect(() => {
-    setTitle("TIỀN TRỌ");
+    setTitle("PHỒNG TRỌ");
+    GetListHouse();
+    handleSearch();
+    GetServ();
   }, []);
+
   React.useEffect(() => {
-    setRows(
-      Info.map((item) => {
-        const { reading_date, ...rest } = item;
-        const [year, month] = reading_date.split("-");
-        return { ...rest, year, month };
-      })
+    const selectedRow = [...gridRef.current?.getSelectedRows()][0];
+    if (selectedRow) {
+      const houseId = getRoomInfo(selectedRow).house_id;
+      getOptionServ(houseId);
+    }
+  }, [rowDetail]);
+
+  const GetListHouse = async () => {
+    const result = await gethouse();
+    if (result.data.length > 0) {
+      const arr = result.data.map((item) => {
+        return { value: item.id, label: `${item.id}-${item.house_name}` };
+      });
+      return setListHouse(arr);
+    }
+    return setListHouse([]);
+  };
+  const GetServ = async () => {
+    const result = await getserv();
+    if (result.data.length > 0) {
+      return setListServ(result.data);
+    }
+  };
+  const CheckValidate = (validate, validateDetail) => {
+    if (
+      validate.validate.length === 0 &&
+      validateDetail.validate.length === 0
+    ) {
+      message.warning("không có gì thay đổi");
+      return false;
+    }
+    if (!validate.isCheck || !validateDetail.isCheck) {
+      message.warning("vui lòng điền đầy đủ thông tin!");
+      return false;
+    }
+    return true;
+  };
+  const handleSearch = async () => {
+    try {
+      const filter = form.getFieldsValue();
+      const result = await load(filter);
+      if (result.data.length > 0) {
+        const arr = result.data.map((item) => {
+          return {
+            ...item,
+            house_name: `${item.house_id}-${item.house_name}`,
+          };
+        });
+        setRows(arr);
+      } else setRows([]);
+      const rs = await loadrs();
+      setRoomServ(rs.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const getRoomInfo = (selectedRow) => {
+    const obj = rows.find((item) => item.STT === selectedRow);
+    return obj;
+  };
+  const handleAddRow = () => {
+    const selectedRow = [...gridRef.current?.getSelectedRows()][0];
+    setRowDetail([
+      ...rowDetail,
+      {
+        ...newItem,
+        room_id: getRoomInfo(selectedRow).id,
+      },
+    ]);
+  };
+  const handleDeleteRow = async (listRow) => {
+    if (listRow.length === 0) {
+      message.warning("vui lòng chọn dòng cần xóa");
+      return;
+    }
+    const listRowDel = rowDetail.filter(
+      (obj) => listRow.some((STT) => obj.STT === STT) && !obj.isNew
     );
-  }, []);
-  const handleChange = () => {};
+    const newRow = rowDetail.filter(
+      (obj) => !listRow.some((STT) => obj.STT === STT)
+    );
+    if (listRowDel.length > 0) {
+      const result = await del({ data: listRowDel });
+      result.data.message.map((item) =>
+        item.success
+          ? message.success(item.message)
+          : message.warning(item.message)
+      );
+    }
+    gridRefDetail.current?.setSelectedRows([]);
+    setRowDetail(newRow);
+  };
+  const handleSaveData = async () => {
+    try {
+      const validate = gridRef.current?.Validate();
+      const validateDetail = gridRefDetail.current?.Validate();
+      if (!CheckValidate(validate, validateDetail)) return;
+      const listRow = rows.filter((obj) =>
+        validate.validate.some((val) => obj.STT === val.STT)
+      );
+      const listDetail = rowDetail.filter((obj) =>
+        validateDetail.validate.some((val) => obj.STT === val.STT)
+      );
+      const result = await save({ listRow: listRow, listDetail: listDetail });
+      if (result.success) {
+        result.data.message.map((item) =>
+          item.success
+            ? message.success(item.message)
+            : message.warning(item.message)
+        );
+        handleSearch();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const buttonConfirm = async (props) => {
+    switch (props.type) {
+      case "delete":
+        handleDeleteRow([...gridRefDetail.current?.getSelectedRows()]);
+        break;
+      case "add":
+        handleAddRow();
+        break;
+      case "save":
+        handleSaveData();
+        break;
+      case "export_excel":
+        // console.log("exportExcel");
+        // gridRef.current?.exportExcel();
+        break;
+      default:
+        break;
+    }
+  };
+
+  const getOptionServ = (houseId = "") => {
+    const hasOption = listServ.some((item) => item.house_id === houseId);
+    if (hasOption) {
+      const arr = listServ.map((item) => {
+        if (item.house_id === houseId) {
+          return { value: item.id, label: item.serv_name };
+        }
+      });
+      setOptServ([{ value: "", label: "" }, ...arr]);
+    } else {
+      message.warning("không có dịch vụ");
+      setOptServ([{ value: "", label: "" }]);
+    }
+  };
+
+  const handleLoadDetail = (val) => {
+    if (val) {
+      const roomId = getRoomInfo(val).id;
+      const detail = roomServ.filter((item) => item.room_id === Number(roomId));
+      setRowDetail(detail);
+    } else setRowDetail([]);
+  };
   return (
     <>
       <Row gutter={[8, 16]}>
@@ -139,45 +336,46 @@ const ListRoom = () => {
           <Card style={{ padding: "12px" }}>
             <Row gutter={[8, 8]}>
               <Col span={12}>
-                <Flex gap="middle">
-                  <DatePicker onChange={handleChange} picker="month" />
-                  <Select
-                    placeholder="Nhà"
-                    style={{
-                      width: 160,
-                    }}
-                    allowClear
-                    onChange={handleChange}
-                    options={[
-                      {
-                        value: "H01",
-                        label: "green house",
+                <Filter
+                  form={form}
+                  onSearch={handleSearch}
+                  items={[
+                    {
+                      type: filterType.select,
+                      config: {
+                        options: listHouse,
+                        placeholder: "Nhà",
+                        name: "house_id",
                       },
-                      {
-                        value: "H02",
-                        label: "red house",
+                    },
+                    {
+                      type: filterType.input,
+                      config: {
+                        placeholder: "Tên phòng",
+                        name: "room_name",
                       },
-                    ]}
-                  />
-                  <Input
-                    style={{ width: "160px" }}
-                    placeholder="Tên phòng"
-                  ></Input>
-                  <Button type="primary">Tìm kiếm</Button>
-                </Flex>
+                    },
+                    {
+                      type: filterType.input,
+                      config: {
+                        placeholder: "Tên khách / cccd",
+                        name: "cus_info",
+                      },
+                    },
+                  ]}
+                />
               </Col>
-              <Col offset={7} span={5}>
-                <Flex justify="space-around" align="center">
-                  <Button type="primary">Xuất Excel</Button>
-                  <Button type="primary" style={{ backgroundColor: "#ffb500" }}>
-                    Thêm
-                  </Button>
-                  <Button type="primary" danger>
-                    Xóa
-                  </Button>
-                  <Button type="primary" style={{ backgroundColor: "#48e7db" }}>
-                    Lưu
-                  </Button>
+              <Col span={12}>
+                <Flex justify="flex-end">
+                  <ToolBar
+                    buttonConfig={[
+                      toolBarButtonTypes.exportexcel,
+                      toolBarButtonTypes.add,
+                      toolBarButtonTypes.delete,
+                      toolBarButtonTypes.save,
+                    ]}
+                    handleConfirm={buttonConfirm}
+                  />
                 </Flex>
               </Col>
               <Col span={24}>
@@ -192,17 +390,36 @@ const ListRoom = () => {
             </Row>
           </Card>
         </Col>
-        <Col style={{ height: "500px" }} span={24}>
+        <Col style={{ height: "400px" }} span={24}>
           <Card>
             <Grid
               ref={gridRef}
               direction="ltr"
-              columnKeySelected="id"
-              selection={selectionTypes.multi}
+              columnKeySelected="STT"
+              selection={selectionTypes.single}
               columns={columns}
               rows={rows}
               groupBy={["house_name"]}
               setRows={setRows}
+              onFocus={onFocus}
+              pagination={paginationTypes.scroll}
+              maxHeight={800}
+              onCellClick
+              limit={5}
+              handleGetSelected={handleLoadDetail}
+            />
+          </Card>
+        </Col>
+        <Col style={{ height: "300px" }} span={24}>
+          <Card>
+            <Grid
+              ref={gridRefDetail}
+              direction="ltr"
+              columnKeySelected="STT"
+              selection={selectionTypes.single}
+              columns={columnDetail}
+              rows={rowDetail}
+              setRows={setRowDetail}
               onFocus={onFocus}
               pagination={paginationTypes.scroll}
               maxHeight={800}

@@ -52,12 +52,12 @@ const ModalCreateContract = ({
     },
     {
       label: "Giới tính",
-      name: "sex",
+      name: "gender",
       span: 12,
       field: (
         <Radio.Group>
-          <Radio value="0"> nam </Radio>
-          <Radio value="1"> nữ </Radio>
+          <Radio value="m"> nam </Radio>
+          <Radio value="f"> nữ </Radio>
         </Radio.Group>
       ),
       require: true,
@@ -145,7 +145,7 @@ const ModalCreateContract = ({
   ];
   const Info = {
     customer_name: "",
-    sex: 1,
+    gender: "m",
     phone: "",
     birthday: undefined,
     email: "",
@@ -175,16 +175,16 @@ const ModalCreateContract = ({
       required: true,
     },
     {
-      key: "sex",
+      key: "gender",
       name: "giới tính",
       type: columnTypes.Select,
       options: [
         {
-          value: 0,
+          value: "m",
           label: "nam",
         },
         {
-          value: 1,
+          value: "f",
           label: "nữ",
         },
       ],
@@ -273,7 +273,7 @@ const ModalCreateContract = ({
       email: data.email,
       phone: data.phone,
       room_id: data.room_id,
-      sex: Number(data.sex),
+      gender: data.gender,
     };
     const contract = {
       room_id: data.room_id,

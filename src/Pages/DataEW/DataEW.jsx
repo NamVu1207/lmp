@@ -23,24 +23,30 @@ import Grid, {
   selectionTypes,
 } from "../../Components/DataGrid/index.jsx";
 import { basicRenderColumns } from "../../utils/dataTable.utils.jsx";
-import { del, gethouse, getroom, load, save } from "../../services/ew.js";
+import {
+  checkroom,
+  del,
+  gethouse,
+  getroom,
+  load,
+  save,
+} from "../../services/ew.js";
 import { Filter, filterType } from "../../Components/Fillter/index.jsx";
 import ToolBar, {
   toolBarButtonTypes,
 } from "../../Components/Toolbar/index.jsx";
 import dayjs from "dayjs";
+import ModalAddData from "../../Components/Modal/ModalAddData.jsx";
 
 const DataEW = () => {
   const onFocus = () => {};
   const [form] = Form.useForm();
-  const [form1] = Form.useForm();
   const gridRef = React.createRef();
   const [rows, setRows] = React.useState([]);
   const [title, setTitle] = useOutletContext();
   const [listHouse, setListHouse] = React.useState([]);
   const [listRoom, setListRoom] = React.useState([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const [houseSelected, setHouseSelected] = React.useState([]);
   const newItem = {
     house_name: "",
     room_name: "",
@@ -90,6 +96,11 @@ const DataEW = () => {
     {
       key: "cus_name",
       name: "Khách thuê",
+      type: columnTypes.TextEditor,
+    },
+    {
+      key: "contract_id",
+      name: "contract_id",
       type: columnTypes.TextEditor,
     },
     {
@@ -205,10 +216,23 @@ const DataEW = () => {
     }
     return true;
   };
-  const handleAddRow = () => {
-    form1.submit();
-    const obj = form1.getFieldsValue();
-    if (!Object.keys(obj).some((key) => obj[key] === undefined)) {
+  const checkEwValid = (listRoom) => {
+    return listRoom.every((item) => {
+      const waterValid =
+        Number(item.water_end) === 0 ||
+        Number(item.water_end) > Number(item.water_start);
+      const electricityValid =
+        Number(item.elec_end) === 0 ||
+        Number(item.elec_end) > Number(item.elec_start);
+      return waterValid && electricityValid;
+    });
+  };
+  const handleAddRow = async (obj) => {
+    const result = await checkroom({
+      house_id: obj.house_id,
+      room_name: obj.room_name,
+    });
+    if (result.success) {
       setRows([
         ...rows,
         {
@@ -217,10 +241,12 @@ const DataEW = () => {
           house_name: listHouse.find((item) => item.value === obj.house_id)
             .label,
           room_name: obj.room_name,
+          cus_name: result.data.name,
+          contract_id: result.data.contractId,
         },
       ]);
       setIsModalOpen(false);
-    } else message.warning("vui lòng chọn đầy đủ");
+    } else message.warning(result.data);
   };
   const handleDeleteRow = async (listRow) => {
     if (listRow.length === 0) {
@@ -249,12 +275,19 @@ const DataEW = () => {
       const listRow = rows.filter((obj) =>
         validate.validate.some((val) => obj.STT === val.STT)
       );
-      const result = await save({ datas: listRow });
-      if (result.success) {
-        result.data.message.map((item) =>
-          item.status ? message.success(item.mess) : message.warning(item.mess)
-        );
-        handleSearch();
+      console.log(listRow);
+      if (!checkEwValid(listRow))
+        return message.warning("chỉ số điện/nước cuối phải lớn hơn chỉ số đầu");
+      else {
+        const result = await save({ datas: listRow });
+        if (result.success) {
+          result.data.message.map((item) =>
+            item.status
+              ? message.success(item.mess)
+              : message.warning(item.mess)
+          );
+          handleSearch();
+        }
       }
     } catch (error) {
       console.log(error);
@@ -352,42 +385,23 @@ const DataEW = () => {
           </Card>
         </Col>
       </Row>
-      <Modal
-        title="Thêm dòng"
-        open={isModalOpen}
-        onOk={handleAddRow}
-        onCancel={() => {
-          setIsModalOpen(false);
-        }}
-      >
-        <Form form={form1}>
-          <Flex justify="space-between">
-            <Form.Item
-              name={"house_id"}
-              label={"chọn nhà"}
-              rules={[{ required: true, message: "Please input!" }]}
-            >
-              <Select
-                allowClear
-                style={{ width: "140px" }}
-                options={listHouse}
-              />
-            </Form.Item>
-            <Form.Item
-              name={"room_name"}
-              label={"chọn phòng"}
-              rules={[{ required: true, message: "Please input!" }]}
-            >
-              <Select
-                allowClear
-                showSearch
-                style={{ width: "140px" }}
-                options={listRoom}
-              />
-            </Form.Item>
-          </Flex>
-        </Form>
-      </Modal>
+      <ModalAddData
+        handleAdd={handleAddRow}
+        isOpen={isModalOpen}
+        onOpen={setIsModalOpen}
+        config={[
+          {
+            name: "house_id",
+            label: "chọn nhà",
+            option: listHouse,
+          },
+          {
+            name: "room_name",
+            label: "chọn phòng",
+            option: listRoom,
+          },
+        ]}
+      />
     </>
   );
 };

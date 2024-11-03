@@ -2,13 +2,11 @@ import {
   Button,
   Card,
   Col,
-  DatePicker,
   Divider,
   Flex,
-  Input,
-  Menu,
+  Form,
+  message,
   Row,
-  Select,
   Typography,
 } from "antd";
 import React from "react";
@@ -19,74 +17,79 @@ import Grid, {
   selectionTypes,
 } from "../../Components/DataGrid/index.jsx";
 import { basicRenderColumns } from "../../utils/dataTable.utils.jsx";
+import { Filter, filterType } from "../../Components/Fillter/index.jsx";
+import ToolBar, {
+  toolBarButtonTypes,
+} from "../../Components/Toolbar/index.jsx";
+import ModalPayBill from "../../Components/Modal/ModalPayBill.jsx";
+import { gethouse, getroom, load,del } from "../../services/rentalfee.js";
 
 const Rentalfee = () => {
   const onFocus = () => {};
   const gridRef = React.createRef();
+  const [form] = Form.useForm();
   const [rows, setRows] = React.useState([]);
+  const [listHouse, setListHouse] = React.useState([]);
+  const [listRoom, setListRoom] = React.useState([]);
   const [title, setTitle] = useOutletContext();
-  const Info = [
-    {
-      id: 1,
-      house_name: "green house",
-      name: "phòng 01",
-      customer_name: "Nguyen Van A",
-      rentalfee: 4500000,
-      payment_date: "2024-10-05",
-      payment_month: 10,
-      payment_year: 2024,
-      payment_status: 1,
-    },
-    {
-      id: 2,
-      house_name: "green house",
-      name: "phòng 02",
-      customer_name: "Nguyen Van A",
-      rentalfee: 4500000,
-      payment_date: "2024-10-05",
-      payment_month: 10,
-      payment_year: 2024,
-      payment_status: 0,
-    },
-  ];
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
   const columns = basicRenderColumns([
+    {
+      key: "STT",
+      name: "STT",
+      width: 60,
+    },
     {
       key: "id",
       name: "ID",
-      width: 60,
       visible: true,
     },
     {
-      key: "STT",
-      name: "stt",
-      width: 60,
+      key: "house_id",
+      name: "house_id",
+      type: columnTypes.TextEditor,
+      visible: true,
     },
     {
       key: "house_name",
       name: "Nhà",
       type: columnTypes.TextEditor,
-      editable: true,
     },
     {
-      key: "name",
+      key: "room_id",
+      name: "room_id",
+      type: columnTypes.TextEditor,
+      visible: true,
+    },
+    {
+      key: "room_name",
       name: "Phòng",
       type: columnTypes.TextEditor,
-      editable: true,
     },
     {
-      key: "customer_name",
-      name: "Khách thuê",
+      key: "contract_id",
+      name: "contract_id",
       type: columnTypes.TextEditor,
-      editable: true,
+      visible: true,
     },
     {
-      key: "rentalfee",
-      name: "tiền trọ",
+      key: "price",
+      name: "giá tiền",
       type: columnTypes.TextEditor,
     },
     {
-      key: "payment_date",
-      name: "ngày thanh toán",
+      key: "payment_method",
+      name: "p.thức thanh toán",
+      type: columnTypes.Checkbox,
+    },
+    {
+      key: "payment_month",
+      name: "tháng",
+      type: columnTypes.TextEditor,
+    },
+    {
+      key: "payment_year",
+      name: "nắm",
       type: columnTypes.TextEditor,
     },
     {
@@ -94,31 +97,77 @@ const Rentalfee = () => {
       name: "trạng thái",
       type: columnTypes.TextEditor,
     },
-    {
-      key: "note",
-      name: "ghi chú",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "payment_month",
-      name: "tháng",
-      type: columnTypes.TextEditor,
-      visible: true,
-    },
-    {
-      key: "payment_year",
-      name: "năm",
-      type: columnTypes.TextEditor,
-      visible: true,
-    },
   ]);
   React.useEffect(() => {
-    setTitle("TIỀN TRỌ");
+    setTitle("TIỀN PHÒNG");
+    GetListHouse();
+    GetListRoom();
+    handleSearch();
   }, []);
-  React.useEffect(() => {
-    setRows(Info);
-  }, []);
-  const handleChange = () => {};
+  const GetListHouse = async () => {
+    const result = await gethouse();
+    if (result.data.length > 0) {
+      const arr = result.data.map((item) => {
+        return { value: item.id, label: `${item.id}-${item.house_name}` };
+      });
+      return setListHouse(arr);
+    }
+    return setListHouse([]);
+  };
+  const GetListRoom = async () => {
+    const result = await getroom();
+    if (result.data.length > 0) {
+      const arr = result.data.map((item) => {
+        return { value: item.room_name, label: item.room_name };
+      });
+      return setListRoom(arr);
+    }
+    return setListRoom([]);
+  };
+  const handleSearch = async () => {
+    try {
+      const filter = form.getFieldsValue();
+      const result = await load(filter);
+      if (result.data.length > 0) {
+        const arr = result.data.map((item) => {
+          return {
+            ...item,
+            house_name: `${item.house_id}-${item.house_name}`,
+          };
+        });
+        setRows(arr);
+      } else setRows([]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleDeleteRow = async (listRow) => {
+    if (listRow.length === 0) {
+      message.warning("vui lòng chọn dòng cần xóa");
+      return;
+    }
+    const listRowDel = rows.filter(
+      (obj) => listRow.some((STT) => obj.STT === STT) && !obj.isNew
+    );
+    if (listRowDel.length > 0) {
+      const result = await del({ data: listRowDel });
+      console.log(result);
+      result.data.message.map((item) =>
+        item.success
+          ? message.success(item.message)
+          : message.warning(item.message)
+      );
+      gridRef.current?.setSelectedRows([]);
+      handleSearch();
+    }
+  };
+  const buttonConfirm = async (props) => {
+    switch (props.type) {
+      case "delete":
+        handleDeleteRow([...gridRef.current?.getSelectedRows()]);
+        break;
+    }
+  };
   return (
     <>
       <Row gutter={[8, 16]}>
@@ -126,54 +175,43 @@ const Rentalfee = () => {
           <Card style={{ padding: "12px" }}>
             <Row gutter={[8, 8]}>
               <Col span={12}>
-                <Flex gap="middle">
-                  <DatePicker onChange={handleChange} picker="month" />
-                  <Select
-                    placeholder="Nhà"
-                    style={{
-                      width: 160,
+                <Filter
+                  form={form}
+                  onSearch={handleSearch}
+                  items={[
+                    {
+                      type: filterType.select,
+                      config: {
+                        options: listHouse,
+                        placeholder: "Nhà",
+                        name: "house_id",
+                      },
+                    },
+                    {
+                      type: filterType.input,
+                      config: {
+                        placeholder: "Tên dịch vụ",
+                        name: "serv_name",
+                      },
+                    },
+                  ]}
+                />
+              </Col>
+              <Col span={12}>
+                <Flex justify="flex-end">
+                  <Button
+                    type="primary"
+                    style={{ marginRight: "8px", fontWeight: "500" }}
+                    onClick={() => {
+                      setIsModalOpen(true);
                     }}
-                    allowClear
-                    onChange={handleChange}
-                    options={[
-                      {
-                        value: "H01",
-                        label: "green house",
-                      },
-                      {
-                        value: "H02",
-                        label: "red house",
-                      },
-                    ]}
+                  >
+                    Tính tiền
+                  </Button>
+                  <ToolBar
+                    buttonConfig={[toolBarButtonTypes.delete]}
+                    handleConfirm={buttonConfirm}
                   />
-                  <Input
-                    style={{ width: "160px" }}
-                    placeholder="Tên phòng"
-                  ></Input>
-                  <Button type="primary">Tìm kiếm</Button>
-                </Flex>
-              </Col>
-              <Col offset={7} span={5}>
-                <Flex justify="space-around" align="center">
-                  <Button type="primary">Xuất Excel</Button>
-                  <Button type="primary" style={{ backgroundColor: "#ffb500" }}>
-                    Thêm
-                  </Button>
-                  <Button type="primary" danger>
-                    Xóa
-                  </Button>
-                  <Button type="primary" style={{ backgroundColor: "#48e7db" }}>
-                    Lưu
-                  </Button>
-                </Flex>
-              </Col>
-              <Col span={24}>
-                <Flex align="center">
-                  <Typography> đã thuê:</Typography>
-                  <Divider type="vertical" />
-                  <Typography> chưa thuê:</Typography>
-                  <Divider type="vertical" />
-                  <Typography> chưa thu phí:</Typography>
                 </Flex>
               </Col>
             </Row>
@@ -184,11 +222,11 @@ const Rentalfee = () => {
             <Grid
               ref={gridRef}
               direction="ltr"
-              columnKeySelected="id"
+              columnKeySelected="STT"
               selection={selectionTypes.multi}
               columns={columns}
               rows={rows}
-              groupBy={["house_name"]}
+              groupBy={["house_name", "room_name"]}
               setRows={setRows}
               onFocus={onFocus}
               pagination={paginationTypes.scroll}
@@ -198,6 +236,22 @@ const Rentalfee = () => {
           </Card>
         </Col>
       </Row>
+      <ModalPayBill
+        isOpen={isModalOpen}
+        onOpen={setIsModalOpen}
+        config={[
+          {
+            name: "house_id",
+            label: "chọn nhà",
+            option: listHouse,
+          },
+          {
+            name: "room_name",
+            label: "chọn phòng",
+            option: listRoom,
+          },
+        ]}
+      />
     </>
   );
 };

@@ -7,21 +7,32 @@ export const dataConverTable = ({ column, row, onRowChange }, itemColumn) => {
   const keyValue = column.key;
   const rowValue = row[keyValue];
   let dataConvert;
-
+  let cost;
   switch (keyValue) {
+    case "contract_status":
+      dataConvert = rowValue ? "đang thuê" : "hết hạn";
+      break;
+    case "TotalPrice":
+      cost = row.UnitPrice * row.Quantity;
+      dataConvert = new Intl.NumberFormat().format(cost);
+      break;
+    case "price":
+    case "UnitPrice":
+      dataConvert = new Intl.NumberFormat().format(rowValue);
+      break;
     case "payment_status":
-      dataConvert = rowValue ? "đã thanh toán" : " chưa  thanh toán";
+      dataConvert = rowValue ? "đã thanh toán" : "chưa thanh toán";
       break;
     case "booking_status":
       dataConvert = rowValue ? "đang cọc" : "hết hạn";
       break;
     case "elec_cost":
-      dataConvert = rowValue ? (row.elec_end - row.elec_start) * rowValue : "";
+      cost = rowValue ? (row.elec_end - row.elec_start) * rowValue : "";
+      dataConvert = new Intl.NumberFormat().format(cost);
       break;
     case "water_cost":
-      dataConvert = rowValue
-        ? (row.water_end - row.water_start) * rowValue
-        : "";
+      cost = rowValue ? (row.water_end - row.water_start) * rowValue : "";
+      dataConvert = new Intl.NumberFormat().format(cost);
       break;
     default:
       dataConvert = !!row[keyValue] ? `${row[keyValue]}` : "";
@@ -47,7 +58,7 @@ export const dataConverTable = ({ column, row, onRowChange }, itemColumn) => {
     case "Select":
       dataConvert = itemColumn?.options.find(
         (item) => item.value === row[keyValue]
-      ).label; 
+      ).label;
     default:
       break;
   }
@@ -61,7 +72,14 @@ export const dataConverTable = ({ column, row, onRowChange }, itemColumn) => {
               padding: "0px 8px",
               border: "1px solid red",
             }
-          : { boxSizing: "border-box", height: "42px", padding: "0px 8px" }
+          : {
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              boxSizing: "border-box",
+              height: "42px",
+              padding: "0px 8px",
+            }
       }
     >
       {dataConvert}

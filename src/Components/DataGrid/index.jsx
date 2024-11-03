@@ -158,12 +158,13 @@ const Grid = forwardRef(
       rows = new Set(),
       groupBy = [],
       setRows,
-      onFocus,
+      onFocus = () => {},
       limit = 20,
       maxHeight = 720,
       pagination = paginationTypes.scroll,
       onCellClick = false,
       onCellDoubleClick,
+      bottomSummaryRows = [],
       handleGetSelected = () => {},
     },
     ref
@@ -277,12 +278,10 @@ const Grid = forwardRef(
     }, []);
 
     const summaryRows = useMemo(() => {
-      let cntrNoCount = new Set(rows.map((obj) => obj["CntrNo"]));
       return [
         {
           id: "total_0",
           totalCount: rows.length,
-          cntrNoCount: [...cntrNoCount].length,
         },
       ];
     }, [rows]);
@@ -428,7 +427,7 @@ const Grid = forwardRef(
             pagination === "scroll" ? "fill-grid" : ""
           }`}
           style={{
-            height: "calc(100% - 100px)",
+            height: "calc(100% - 50px)",
             maxHeight: maxHeight,
             ...style,
           }}
@@ -444,6 +443,7 @@ const Grid = forwardRef(
           onRowsChange={setRows}
           groupBy={groupBy}
           rowGrouper={rowGrouper}
+          bottomSummaryRows={bottomSummaryRows}
           expandedGroupIds={expandedGroupIds}
           onExpandedGroupIdsChange={setExpandedGroupIds}
           onSelectedCellChange={
@@ -485,23 +485,6 @@ const Grid = forwardRef(
             >
               Số dòng: {summaryRows[0].totalCount.toLocaleString("vi-VN")}
             </Typography>
-            {rows.some((obj) => "CntrNo" in obj) ? (
-              <>
-                <Divider type="vertical" style={{ borderColor: "#818181" }} />
-                <Typography
-                  level={5}
-                  style={{
-                    textAlign: "center",
-                    fontWeight: "600",
-                    color: "#555555",
-                  }}
-                >
-                  Số công: {summaryRows[0].cntrNoCount.toLocaleString("vi-VN")}
-                </Typography>
-              </>
-            ) : (
-              ""
-            )}
           </Space>
           {pagination === "pagination" && rows && rows.length > 0 ? (
             <Pagination

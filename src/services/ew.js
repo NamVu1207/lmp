@@ -16,6 +16,10 @@ export const gethouse = async () => {
   const result = await poster(cpath("listhouse"));
   return result;
 };
+export const checkroom = async (data) => {
+  const result = await poster(cpath("checkroom"), data);
+  return result;
+};
 export const getroom = async () => {
   const result = await poster(cpath("listroom"));
   return result;

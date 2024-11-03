@@ -8,6 +8,7 @@ import {
   Form,
   Input,
   Menu,
+  message,
   Modal,
   Row,
   Select,
@@ -24,7 +25,17 @@ import { basicRenderColumns } from "../../utils/dataTable.utils.jsx";
 import ToolBar, {
   toolBarButtonTypes,
 } from "../../Components/Toolbar/index.jsx";
-import { gethouse, getroom } from "../../services/booking.js";
+import {
+  checkroom,
+  del,
+  gethouse,
+  getroom,
+  load,
+  save,
+} from "../../services/booking.js";
+import dayjs from "dayjs";
+import { Filter, filterType } from "../../Components/Fillter/index.jsx";
+import ModalAddData from "../../Components/Modal/ModalAddData.jsx";
 
 const Booking = () => {
   const onFocus = () => {};
@@ -36,31 +47,8 @@ const Booking = () => {
   const [listHouse, setListHouse] = React.useState([]);
   const [listRoom, setListRoom] = React.useState([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const Info = [
-    {
-      id: 1,
-      house_name: "green house",
-      name: "phòng 03",
-      customer_name: "Nguyen Van A",
-      customer_phone: "0912345612",
-      price: 2000000,
-      booking_date: "2024-10-25",
-      target_date: "2024-11-05",
-      booking_status: 1,
-    },
-    {
-      id: 2,
-      house_name: "green house",
-      name: "phòng 03",
-      customer_name: "Nguyen Van A",
-      customer_phone: "0912345612",
-      price: 2000000,
-      booking_date: "2024-10-25",
-      target_date: "2024-11-05",
-      booking_status: 0,
-    },
-  ];
   const newItem = {
+    id: 0,
     house_id: "",
     house_name: "",
     room_name: "",
@@ -70,6 +58,7 @@ const Booking = () => {
     booking_date: undefined,
     target_date: undefined,
     booking_status: true,
+    note: "",
     isNew: true,
   };
   const columns = basicRenderColumns([
@@ -89,7 +78,6 @@ const Booking = () => {
       name: "id nhà",
       type: columnTypes.TextEditor,
       visible: true,
-      width: 150,
     },
     {
       key: "house_name",
@@ -97,19 +85,25 @@ const Booking = () => {
       type: columnTypes.TextEditor,
     },
     {
+      key: "room_id",
+      name: "room_id",
+      type: columnTypes.TextEditor,
+      visible: true,
+    },
+    {
       key: "room_name",
       name: "Phòng",
       type: columnTypes.TextEditor,
     },
     {
-      key: "customer_name",
+      key: "cus_name",
       name: "Khách thuê",
       type: columnTypes.TextEditor,
       editable: true,
       required: true,
     },
     {
-      key: "customer_phone",
+      key: "cus_phone",
       name: "SDT",
       type: columnTypes.TextEditor,
       editable: true,
@@ -139,16 +133,31 @@ const Booking = () => {
     {
       key: "booking_status",
       name: "Trạng thái",
+      type: columnTypes.Select,
+      options: [
+        {
+          value: true,
+          label: "đang cọc",
+        },
+        {
+          value: false,
+          label: "hết hạn",
+        },
+      ],
+      editable: true,
+    },
+    {
+      key: "note",
+      name: "ghi chú",
       type: columnTypes.TextEditor,
+      editable: true,
     },
   ]);
   React.useEffect(() => {
-    setTitle("TIỀN TRỌ");
+    setTitle("CỌC PHÒNG");
+    handleSearch();
     GetListHouse();
     GetListRoom();
-  }, []);
-  React.useEffect(() => {
-    setRows(Info);
   }, []);
   const GetListHouse = async () => {
     const result = await gethouse();
@@ -181,10 +190,33 @@ const Booking = () => {
     }
     return true;
   };
-  const handleAddRow = () => {
-    form1.submit();
-    const obj = form1.getFieldsValue();
-    if (!Object.keys(obj).some((key) => obj[key] === undefined)) {
+  const handleSearch = async () => {
+    try {
+      const filter = form.getFieldsValue();
+      const result = await load(filter);
+      if (result.data.length > 0) {
+        const arr = result.data.map((item) => {
+          return {
+            ...item,
+            house_name: `${item.house_id}-${item.house_name}`,
+            booking_date: dayjs(item.booking_date).format("YYYY-MM-DD"),
+            target_date: dayjs(item.target_date).format("YYYY-MM-DD"),
+          };
+        });
+        setRows(arr);
+      } else setRows([]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleAddRow = async (obj) => {
+    const result = await checkroom({
+      house_id: obj.house_id,
+      room_name: obj.room_name,
+    });
+    if (!result.success)
+      return message.warning("phòng không tòn tại hoặc đã cho thuê");
+    else {
       setRows([
         ...rows,
         {
@@ -193,10 +225,31 @@ const Booking = () => {
           house_name: listHouse.find((item) => item.value === obj.house_id)
             .label,
           room_name: obj.room_name,
+          room_id: result.data.id,
         },
       ]);
       setIsModalOpen(false);
-    } else message.warning("vui lòng chọn đầy đủ");
+    }
+  };
+  const handleDeleteRow = async (listRow) => {
+    if (listRow.length === 0) {
+      message.warning("vui lòng chọn dòng cần xóa");
+      return;
+    }
+    const listRowDel = rows.filter(
+      (obj) => listRow.some((STT) => obj.STT === STT) && !obj.isNew
+    );
+    const newRow = rows.filter(
+      (obj) => !listRow.some((STT) => obj.STT === STT)
+    );
+    if (listRowDel.length > 0) {
+      const result = await del({ data: listRowDel });
+      result.data.message.map((item) =>
+        item.status ? message.success(item.mess) : message.warning(item.mess)
+      );
+    }
+    gridRef.current?.setSelectedRows([]);
+    setRows(newRow);
   };
   const handleSaveData = async () => {
     try {
@@ -206,14 +259,16 @@ const Booking = () => {
         validate.validate.some((val) => obj.STT === val.STT)
       );
       console.log(listRow);
-
-      // const result = await save({ datas: listRow });
-      // if (result.success) {
-      //   result.data.message.map((item) =>
-      //     item.status ? message.success(item.mess) : message.warning(item.mess)
-      //   );
-      //   handleSearch();
-      // }
+      const result = await save({ datas: listRow });
+      console.log(result);
+      if (result.success) {
+        result.data.message.map((item) =>
+          item.success
+            ? message.success(item.message)
+            : message.warning(item.message)
+        );
+        handleSearch();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -221,7 +276,7 @@ const Booking = () => {
   const buttonConfirm = async (props) => {
     switch (props.type) {
       case "delete":
-        // handleDeleteRow([...gridRef.current?.getSelectedRows()]);
+        handleDeleteRow([...gridRef.current?.getSelectedRows()]);
         break;
       case "add":
         setIsModalOpen(true);
@@ -245,32 +300,27 @@ const Booking = () => {
           <Card style={{ padding: "12px" }}>
             <Row gutter={[8, 8]}>
               <Col span={12}>
-                <Flex gap="middle">
-                  <DatePicker.RangePicker onChange={handleChange} />
-                  <Select
-                    placeholder="Nhà"
-                    style={{
-                      width: 160,
-                    }}
-                    allowClear
-                    onChange={handleChange}
-                    options={[
-                      {
-                        value: "H01",
-                        label: "green house",
+                <Filter
+                  form={form}
+                  onSearch={handleSearch}
+                  items={[
+                    {
+                      type: filterType.rangePicker,
+                      config: {
+                        placeholder: "Select date",
+                        name: "date",
                       },
-                      {
-                        value: "H02",
-                        label: "red house",
+                    },
+                    {
+                      type: filterType.select,
+                      config: {
+                        options: listHouse,
+                        placeholder: "Nhà",
+                        name: "house_id",
                       },
-                    ]}
-                  />
-                  <Input
-                    style={{ width: "160px" }}
-                    placeholder="Tên phòng"
-                  ></Input>
-                  <Button type="primary">Tìm kiếm</Button>
-                </Flex>
+                    },
+                  ]}
+                />
               </Col>
               <Col span={12}>
                 <Flex justify="flex-end">
@@ -316,42 +366,23 @@ const Booking = () => {
           </Card>
         </Col>
       </Row>
-      <Modal
-        title="Thêm dòng"
-        open={isModalOpen}
-        onOk={handleAddRow}
-        onCancel={() => {
-          setIsModalOpen(false);
-        }}
-      >
-        <Form form={form1}>
-          <Flex justify="space-between">
-            <Form.Item
-              name={"house_id"}
-              label={"chọn nhà"}
-              rules={[{ required: true, message: "Please input!" }]}
-            >
-              <Select
-                allowClear
-                style={{ width: "140px" }}
-                options={listHouse}
-              />
-            </Form.Item>
-            <Form.Item
-              name={"room_name"}
-              label={"chọn phòng"}
-              rules={[{ required: true, message: "Please input!" }]}
-            >
-              <Select
-                allowClear
-                showSearch
-                style={{ width: "140px" }}
-                options={listRoom}
-              />
-            </Form.Item>
-          </Flex>
-        </Form>
-      </Modal>
+      <ModalAddData
+        handleAdd={handleAddRow}
+        isOpen={isModalOpen}
+        onOpen={setIsModalOpen}
+        config={[
+          {
+            name: "house_id",
+            label: "chọn nhà",
+            option: listHouse,
+          },
+          {
+            name: "room_name",
+            label: "chọn phòng",
+            option: listRoom,
+          },
+        ]}
+      />
     </>
   );
 };

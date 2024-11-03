@@ -7,7 +7,8 @@ export default function RangePickerFilter({ name = "", placeholder = "" }) {
       name={name}
       placeholder={placeholder}
       onChange={(val) => {
-        formInstance.setFieldValue(name, val);
+        if (val !== null) formInstance.setFieldValue(name, val);
+        else formInstance.setFieldValue(name, []);
       }}
     />
   );

@@ -1,16 +1,4 @@
-import {
-  Button,
-  Card,
-  Col,
-  DatePicker,
-  Divider,
-  Flex,
-  Input,
-  Menu,
-  Row,
-  Select,
-  Typography,
-} from "antd";
+import { Card, Col, Divider, Flex, Form, message, Row, Typography } from "antd";
 import React from "react";
 import { useOutletContext } from "react-router-dom";
 import Grid, {
@@ -19,119 +7,314 @@ import Grid, {
   selectionTypes,
 } from "../../Components/DataGrid/index.jsx";
 import { basicRenderColumns } from "../../utils/dataTable.utils.jsx";
+import { Filter, filterType } from "../../Components/Fillter/index.jsx";
+import {
+  checkroom,
+  del,
+  gethouse,
+  getroom,
+  load,
+  save,
+} from "../../services/customer.js";
+import ToolBar, {
+  toolBarButtonTypes,
+} from "../../Components/Toolbar/index.jsx";
+import ModalAddData from "../../Components/Modal/ModalAddData.jsx";
+import dayjs from "dayjs";
 
 const Customer = () => {
   const onFocus = () => {};
   const gridRef = React.createRef();
+  const [form] = Form.useForm();
   const [rows, setRows] = React.useState([]);
+  const [listHouse, setListHouse] = React.useState([]);
+  const [listRoom, setListRoom] = React.useState([]);
   const [title, setTitle] = useOutletContext();
-  const Info = [
-    {
-      id: 1,
-      house_name: "green house",
-      name: "phòng 01",
-      customer_name: "Nguyen Van A",
-      elec_start: 12,
-      elec_end: 23,
-      water_start: 1,
-      water_end: 12,
-      reading_date: "2024-10-05",
-      elec_cost: 4000,
-      water_cost: 2000,
-    },
-    {
-      id: 2,
-      house_name: "green house",
-      name: "phòng 01",
-      customer_name: "Nguyen Van A",
-      elec_start: 12,
-      elec_end: 23,
-      water_start: 1,
-      water_end: 12,
-      reading_date: "2024-11-05",
-      elec_cost: 4000,
-      water_cost: 2000,
-    },
-  ];
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const newItem = {
+    id: "",
+    cus_name: "",
+    gender: "m",
+    phone: "",
+    birthday: undefined,
+    email: "",
+    cccd: "",
+    cus_address: "",
+    contract_status: true,
+    isNew: true,
+  };
+
   const columns = basicRenderColumns([
+    {
+      key: "STT",
+      name: "STT",
+      width: 60,
+    },
     {
       key: "id",
       name: "ID",
-      width: 60,
-      visible: false,
+      visible: true,
+    },
+    {
+      key: "house_id",
+      name: "house_id",
+      type: columnTypes.TextEditor,
+      visible: true,
     },
     {
       key: "house_name",
       name: "Nhà",
       type: columnTypes.TextEditor,
-      editable: true,
     },
     {
-      key: "name",
+      key: "room_id",
+      name: "room_id",
+      type: columnTypes.TextEditor,
+      visible: true,
+    },
+    {
+      key: "capacity",
+      name: "capacity",
+      type: columnTypes.TextEditor,
+      visible: true,
+    },
+    {
+      key: "room_name",
       name: "Phòng",
       type: columnTypes.TextEditor,
-      editable: true,
     },
     {
-      key: "customer_name",
-      name: "Khách thuê",
+      key: "contract_id",
+      name: "mã hợp đồng",
+      width: 120,
+      type: columnTypes.TextEditor,
+    },
+    {
+      key: "cus_name",
+      name: "Tên khách hàng",
       type: columnTypes.TextEditor,
       editable: true,
+      required: true,
     },
     {
-      key: "elec_start",
-      name: "cs diện đầu",
+      key: "gender",
+      name: "giới tính",
+      width: 80,
+      type: columnTypes.Select,
+      options: [
+        {
+          value: "m",
+          label: "nam",
+        },
+        {
+          value: "f",
+          label: "nữ",
+        },
+      ],
+      editable: true,
+      required: true,
+    },
+    {
+      key: "phone",
+      name: "SĐT",
       type: columnTypes.TextEditor,
+      editable: true,
+      required: true,
     },
     {
-      key: "elec_end",
-      name: "cs diện cuối",
+      key: "birthday",
+      name: "ngày sinh",
+      width: 120,
+      type: columnTypes.DatePicker,
+      editable: true,
+      required: true,
+    },
+    {
+      key: "email",
+      name: "Email",
       type: columnTypes.TextEditor,
+      width: 200,
+      editable: true,
+      required: true,
     },
     {
-      key: "water_start",
-      name: "cs nước đầu",
+      key: "cccd",
+      name: "cccd",
       type: columnTypes.TextEditor,
+      editable: true,
+      required: true,
     },
     {
-      key: "water_end",
-      name: "cs nước cuối",
+      key: "cus_address",
+      name: "đia chỉ",
       type: columnTypes.TextEditor,
+      editable: true,
+      required: true,
     },
     {
-      key: "elec_cost",
-      name: "Tiền điện",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "water_cost",
-      name: "Tiền nước",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "month",
-      name: "Tháng",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "year",
-      name: "năm",
+      key: "contract_status",
+      name: "trạng thái thuê",
+      width: 120,
       type: columnTypes.TextEditor,
     },
   ]);
   React.useEffect(() => {
-    setTitle("TIỀN TRỌ");
+    setTitle("KHÁCH HÀNG");
+    GetListHouse();
+    GetListRoom();
+    handleSearch();
   }, []);
-  React.useEffect(() => {
-    setRows(
-      Info.map((item) => {
-        const { reading_date, ...rest } = item;
-        const [year, month] = reading_date.split("-");
-        return { ...rest, year, month };
-      })
+  const GetListHouse = async () => {
+    const result = await gethouse();
+    if (result.data.length > 0) {
+      const arr = result.data.map((item) => {
+        return { value: item.id, label: `${item.id}-${item.house_name}` };
+      });
+      return setListHouse(arr);
+    }
+    return setListHouse([]);
+  };
+  const GetListRoom = async () => {
+    const result = await getroom();
+    if (result.data.length > 0) {
+      const arr = result.data.map((item) => {
+        return { value: item.room_name, label: item.room_name };
+      });
+      return setListRoom(arr);
+    }
+    return setListRoom([]);
+  };
+  const CheckValidate = (validate) => {
+    if (validate.validate.length === 0) {
+      message.warning("không có gì thay đổi");
+      return false;
+    }
+    if (!validate.isCheck) {
+      message.warning("vui lòng điền đầy đủ thông tin!");
+      return false;
+    }
+    return true;
+  };
+  const handleSearch = async () => {
+    try {
+      const filter = form.getFieldsValue();
+      const result = await load(filter);
+      if (result.data.length > 0) {
+        const arr = result.data.map((item) => {
+          return {
+            ...item,
+            house_name: `${item.house_id}-${item.house_name}`,
+            birthday: dayjs(item.birthday).format("YYYY-MM-DD"),
+          };
+        });
+        setRows(arr);
+      } else setRows([]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleAddRow = async (obj) => {
+    const result = await checkroom({
+      house_id: obj.house_id,
+      room_name: obj.room_name,
+    });
+    if (!result.success)
+      return message.warning("phòng không tòn tại hoặc chưa cho thuê");
+    else {
+      const val = rows.find(
+        (item) =>
+          item.house_id === obj.house_id &&
+          item.room_name === obj.room_name &&
+          item.contract_status === true
+      );
+      setRows([
+        ...rows,
+        {
+          ...newItem,
+          contract_id: val.contract_id,
+          house_id: val.house_id,
+          house_name: val.house_name,
+          room_name: val.room_name,
+          room_id: val.room_id,
+          capacity: val.capacity,
+        },
+      ]);
+      setIsModalOpen(false);
+    }
+  };
+  const checkCapacity = (listrow) => {
+    return listrow.every(
+      (item) =>
+        rows.filter((obj) => obj.contract_id === item.contract_id).length <=
+        item.capacity
     );
-  }, []);
-  const handleChange = () => {};
+  };
+  const handleSaveData = async () => {
+    try {
+      const validate = gridRef.current?.Validate();
+      if (!CheckValidate(validate)) return;
+      const listRow = rows.filter((obj) =>
+        validate.validate.some((val) => obj.STT === val.STT)
+      );
+      if (!checkCapacity(listRow)) {
+        message.warning(
+          "số lượng khách trong một phòng vượt quá lượng khách tối đa"
+        );
+      } else {
+        const result = await save({ datas: listRow });
+        console.log(result);
+        if (result.success) {
+          result.data.message.map((item) =>
+            item.success
+              ? message.success(item.message)
+              : message.warning(item.message)
+          );
+          handleSearch();
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleDeleteRow = async (listRow) => {
+    if (listRow.length === 0) {
+      message.warning("vui lòng chọn dòng cần xóa");
+      return;
+    }
+    const listRowDel = rows.filter(
+      (obj) => listRow.some((STT) => obj.STT === STT) && !obj.isNew
+    );
+    if (listRowDel.length > 0) {
+      const result = await del({ data: listRowDel });
+      console.log(result);
+      result.data.message.map((item) =>
+        item.success
+          ? message.success(item.message)
+          : message.warning(item.message)
+      );
+    }
+    gridRef.current?.setSelectedRows([]);
+    handleSearch();
+  };
+  const buttonConfirm = async (props) => {
+    switch (props.type) {
+      case "delete":
+        handleDeleteRow([...gridRef.current?.getSelectedRows()]);
+        break;
+      case "add":
+        setIsModalOpen(true);
+        break;
+      case "save":
+        handleSaveData();
+        break;
+      case "export_excel":
+        // console.log("exportExcel");
+        // gridRef.current?.exportExcel();
+        break;
+      default:
+        break;
+    }
+  };
   return (
     <>
       <Row gutter={[8, 16]}>
@@ -139,45 +322,56 @@ const Customer = () => {
           <Card style={{ padding: "12px" }}>
             <Row gutter={[8, 8]}>
               <Col span={12}>
-                <Flex gap="middle">
-                  <DatePicker onChange={handleChange} picker="month" />
-                  <Select
-                    placeholder="Nhà"
-                    style={{
-                      width: 160,
-                    }}
-                    allowClear
-                    onChange={handleChange}
-                    options={[
-                      {
-                        value: "H01",
-                        label: "green house",
+                <Filter
+                  form={form}
+                  onSearch={handleSearch}
+                  items={[
+                    {
+                      type: filterType.select,
+                      config: {
+                        options: listHouse,
+                        placeholder: "Nhà",
+                        name: "house_id",
                       },
-                      {
-                        value: "H02",
-                        label: "red house",
+                    },
+                    {
+                      type: filterType.select,
+                      config: {
+                        options: [
+                          {
+                            value: true,
+                            label: "đang thuê",
+                          },
+                          {
+                            value: false,
+                            label: "hết hợp đồng",
+                          },
+                        ],
+                        placeholder: "trạng thái thuê",
+                        name: "contractActive",
                       },
-                    ]}
-                  />
-                  <Input
-                    style={{ width: "160px" }}
-                    placeholder="Tên phòng"
-                  ></Input>
-                  <Button type="primary">Tìm kiếm</Button>
-                </Flex>
+                    },
+                    {
+                      type: filterType.input,
+                      config: {
+                        placeholder: "Tên khách hàng / cccd",
+                        name: "cus_info",
+                      },
+                    },
+                  ]}
+                />
               </Col>
-              <Col offset={7} span={5}>
-                <Flex justify="space-around" align="center">
-                  <Button type="primary">Xuất Excel</Button>
-                  <Button type="primary" style={{ backgroundColor: "#ffb500" }}>
-                    Thêm
-                  </Button>
-                  <Button type="primary" danger>
-                    Xóa
-                  </Button>
-                  <Button type="primary" style={{ backgroundColor: "#48e7db" }}>
-                    Lưu
-                  </Button>
+              <Col span={12}>
+                <Flex justify="flex-end">
+                  <ToolBar
+                    buttonConfig={[
+                      toolBarButtonTypes.exportexcel,
+                      toolBarButtonTypes.add,
+                      toolBarButtonTypes.delete,
+                      toolBarButtonTypes.save,
+                    ]}
+                    handleConfirm={buttonConfirm}
+                  />
                 </Flex>
               </Col>
               <Col span={24}>
@@ -197,11 +391,11 @@ const Customer = () => {
             <Grid
               ref={gridRef}
               direction="ltr"
-              columnKeySelected="id"
+              columnKeySelected="STT"
               selection={selectionTypes.multi}
               columns={columns}
               rows={rows}
-              groupBy={["house_name"]}
+              groupBy={["house_name", "room_name", "contract_id"]}
               setRows={setRows}
               onFocus={onFocus}
               pagination={paginationTypes.scroll}
@@ -211,6 +405,23 @@ const Customer = () => {
           </Card>
         </Col>
       </Row>
+      <ModalAddData
+        handleAdd={handleAddRow}
+        isOpen={isModalOpen}
+        onOpen={setIsModalOpen}
+        config={[
+          {
+            name: "house_id",
+            label: "chọn nhà",
+            option: listHouse,
+          },
+          {
+            name: "room_name",
+            label: "chọn phòng",
+            option: listRoom,
+          },
+        ]}
+      />
     </>
   );
 };
