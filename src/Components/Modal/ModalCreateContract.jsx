@@ -1,16 +1,9 @@
 import {
-  Button,
-  Cascader,
   DatePicker,
   Form,
   Input,
   InputNumber,
-  Mentions,
-  Select,
-  TreeSelect,
-  Card,
   Col,
-  Image,
   Modal,
   Row,
   Typography,
@@ -28,7 +21,6 @@ import Grid, {
 import { basicRenderColumns } from "../../utils/dataTable.utils";
 import { addcontract } from "../../services/room.js";
 
-const { RangePicker } = DatePicker;
 const ModalCreateContract = ({
   room = {},
   isOpen = false,
@@ -140,18 +132,16 @@ const ModalCreateContract = ({
       name: "note",
       span: 24,
       field: <Input.TextArea />,
-      require: true,
     },
   ];
   const Info = {
-    customer_name: "",
+    cus_name: "",
     gender: "m",
     phone: "",
     birthday: undefined,
     email: "",
     cccd: "",
-    customer_address: "",
-    room_id: room.id,
+    cus_address: "",
     isNew: true,
   };
   const [form] = Form.useForm();
@@ -251,7 +241,11 @@ const ModalCreateContract = ({
 
   const handleChangeCapacity = (value) => {
     const reg = /^-?\d*(\.\d*)?$/;
-    if ((reg.test(value) || value === "" || value === "-") && value >= 0) {
+    if (
+      (reg.test(value) || value === "" || value === "-") &&
+      value >= 0 &&
+      value < room.capacity
+    ) {
       setCapacity(value);
     }
   };
@@ -259,6 +253,10 @@ const ModalCreateContract = ({
   const CheckValidate = (validate) => {
     if (!validate.isCheck) {
       message.warning("vui lòng điền đầy đủ thông tin!");
+      return false;
+    }
+    if (validate.validate.length === 0) {
+      message.warning("không có gì thay đổi");
       return false;
     }
     return true;
@@ -272,7 +270,6 @@ const ModalCreateContract = ({
       cus_address: data.cus_address,
       email: data.email,
       phone: data.phone,
-      room_id: data.room_id,
       gender: data.gender,
     };
     const contract = {
@@ -319,11 +316,15 @@ const ModalCreateContract = ({
         form.submit();
         const result = await handleAddContract();
         if (result.success) {
-          message.success(result.message);
+          result.data.message.map((item) =>
+            item.success
+              ? message.success(item.message)
+              : message.warning(item.message)
+          );
           handleLoad();
           form.resetFields();
           onClose();
-        } else message.warning(result.message);
+        }
       }}
       width={800}
     >

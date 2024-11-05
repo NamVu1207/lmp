@@ -298,24 +298,16 @@ const ListRoom = () => {
       case "save":
         handleSaveData();
         break;
-      case "export_excel":
-        // console.log("exportExcel");
-        // gridRef.current?.exportExcel();
-        break;
-      default:
-        break;
     }
   };
 
   const getOptionServ = (houseId = "") => {
     const hasOption = listServ.some((item) => item.house_id === houseId);
     if (hasOption) {
-      const arr = listServ.map((item) => {
-        if (item.house_id === houseId) {
-          return { value: item.id, label: item.serv_name };
-        }
-      });
-      setOptServ([{ value: "", label: "" }, ...arr]);
+      const opt = listServ
+        .filter((item) => item.house_id === houseId)
+        .map(({ id, serv_name }) => ({ value: id, label: serv_name }));
+      setOptServ([{ value: "", label: "" }, ...opt]);
     } else {
       message.warning("không có dịch vụ");
       setOptServ([{ value: "", label: "" }]);
@@ -369,22 +361,12 @@ const ListRoom = () => {
                 <Flex justify="flex-end">
                   <ToolBar
                     buttonConfig={[
-                      toolBarButtonTypes.exportexcel,
                       toolBarButtonTypes.add,
                       toolBarButtonTypes.delete,
                       toolBarButtonTypes.save,
                     ]}
                     handleConfirm={buttonConfirm}
                   />
-                </Flex>
-              </Col>
-              <Col span={24}>
-                <Flex align="center">
-                  <Typography> đã thuê:</Typography>
-                  <Divider type="vertical" />
-                  <Typography> chưa thuê:</Typography>
-                  <Divider type="vertical" />
-                  <Typography> chưa thu phí:</Typography>
                 </Flex>
               </Col>
             </Row>

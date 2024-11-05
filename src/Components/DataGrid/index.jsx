@@ -43,7 +43,12 @@ export const paginationTypes = {
 
 const { Title } = Typography;
 
-const getEditCell = (key, cellType, options = [], baseColumn) => {
+const getEditCell = (
+  key,
+  cellType,
+  options = [],
+  baseColumn,
+) => {
   switch (cellType) {
     case columnTypes.DatePicker:
       return ({ row, onRowChange }) =>
@@ -97,7 +102,13 @@ const handleRenderColumn = ({
     ...props,
     key,
     renderEditCell: editable
-      ? getEditCell(key, type, props?.options ?? [], baseColumn)
+      ? getEditCell(
+          key,
+          type,
+          props?.options ?? [],
+          baseColumn,
+          props?.handleOpt
+        )
       : null,
   };
 

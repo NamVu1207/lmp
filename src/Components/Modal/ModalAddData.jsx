@@ -1,10 +1,11 @@
 import { Col, Flex, Form, message, Modal, Row, Select } from "antd";
 import React from "react";
 
-const ModalAddData = ({ handleAdd, isOpen = false, onOpen, config = [] }) => {
+const ModalAddData = ({ handleAdd, isOpen = false, onOpen, config = [], width = 550 }) => {
   const [form] = Form.useForm();
   return (
     <Modal
+      width={width}
       title="Thêm dòng"
       open={isOpen}
       onOk={() => {
@@ -33,8 +34,17 @@ const ModalAddData = ({ handleAdd, isOpen = false, onOpen, config = [] }) => {
                   >
                     <Select
                       allowClear
+                      showSearch
+                      filterOption={(input, option) =>
+                        (option?.label ?? "")
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
                       style={{ width: "140px" }}
                       options={item.option}
+                      onChange={(val) => {
+                        item?.handle ? item?.handle(val) : "";
+                      }}
                     />
                   </Form.Item>
                 </Col>

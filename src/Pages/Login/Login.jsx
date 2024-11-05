@@ -34,7 +34,7 @@ const Login = () => {
     setIsLoading(true);
     try {
       const result = await auth.Login(e);
-      if (result) navigate("/");
+      if (result) navigate("/manager");
     } catch (error) {
       console.log(error);
     }

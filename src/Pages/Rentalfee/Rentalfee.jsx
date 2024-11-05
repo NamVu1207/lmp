@@ -22,7 +22,7 @@ import ToolBar, {
   toolBarButtonTypes,
 } from "../../Components/Toolbar/index.jsx";
 import ModalPayBill from "../../Components/Modal/ModalPayBill.jsx";
-import { gethouse, getroom, load,del } from "../../services/rentalfee.js";
+import { gethouse, getroom, load, del } from "../../services/rentalfee.js";
 
 const Rentalfee = () => {
   const onFocus = () => {};
@@ -187,10 +187,18 @@ const Rentalfee = () => {
                       },
                     },
                     {
-                      type: filterType.input,
+                      type: filterType.select,
                       config: {
-                        placeholder: "Tên dịch vụ",
-                        name: "serv_name",
+                        options: listRoom,
+                        placeholder: "Phòng",
+                        name: "room_name",
+                      },
+                    },
+                    {
+                      type: filterType.monthPicker,
+                      config: {
+                        placeholder: "Tháng",
+                        name: "month",
                       },
                     },
                   ]}

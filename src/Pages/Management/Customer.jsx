@@ -40,6 +40,7 @@ const Customer = () => {
     email: "",
     cccd: "",
     cus_address: "",
+    password: "",
     contract_status: true,
     isNew: true,
   };
@@ -150,6 +151,12 @@ const Customer = () => {
       type: columnTypes.TextEditor,
       editable: true,
       required: true,
+    },
+    {
+      key: "password",
+      name: "mật khẩu",
+      type: columnTypes.Password,
+      editable: true,
     },
     {
       key: "contract_status",
@@ -307,12 +314,6 @@ const Customer = () => {
       case "save":
         handleSaveData();
         break;
-      case "export_excel":
-        // console.log("exportExcel");
-        // gridRef.current?.exportExcel();
-        break;
-      default:
-        break;
     }
   };
   return (
@@ -365,22 +366,12 @@ const Customer = () => {
                 <Flex justify="flex-end">
                   <ToolBar
                     buttonConfig={[
-                      toolBarButtonTypes.exportexcel,
                       toolBarButtonTypes.add,
                       toolBarButtonTypes.delete,
                       toolBarButtonTypes.save,
                     ]}
                     handleConfirm={buttonConfirm}
                   />
-                </Flex>
-              </Col>
-              <Col span={24}>
-                <Flex align="center">
-                  <Typography> đã thuê:</Typography>
-                  <Divider type="vertical" />
-                  <Typography> chưa thuê:</Typography>
-                  <Divider type="vertical" />
-                  <Typography> chưa thu phí:</Typography>
                 </Flex>
               </Col>
             </Row>

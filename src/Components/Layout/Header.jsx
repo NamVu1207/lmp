@@ -8,7 +8,7 @@ import {
 import { Link } from "react-router-dom";
 const { Search } = Input;
 const { Title } = Typography;
-const Header = ({title}) => {
+const Header = ({ title }) => {
   const Avatar = "./avatar.jpg";
   const Acc = {
     name: "Admin",
@@ -37,7 +37,7 @@ const Header = ({title}) => {
   };
 
   return (
-    <Row align="middle" justify="space-between" style={{ blockSize: "100%"}}>
+    <Row align="middle" justify="space-between" style={{ blockSize: "100%" }}>
       <Col>
         <Title level={4} style={{ margin: "0px" }}>
           {title}
@@ -47,7 +47,7 @@ const Header = ({title}) => {
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         <Search

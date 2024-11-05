@@ -304,12 +304,6 @@ const DataEW = () => {
       case "save":
         handleSaveData();
         break;
-      case "export_excel":
-        // console.log("exportExcel");
-        // gridRef.current?.exportExcel();
-        break;
-      default:
-        break;
     }
   };
   return (
@@ -345,22 +339,12 @@ const DataEW = () => {
                 <Flex justify="flex-end">
                   <ToolBar
                     buttonConfig={[
-                      toolBarButtonTypes.exportexcel,
                       toolBarButtonTypes.add,
                       toolBarButtonTypes.delete,
                       toolBarButtonTypes.save,
                     ]}
                     handleConfirm={buttonConfirm}
                   />
-                </Flex>
-              </Col>
-              <Col span={24}>
-                <Flex align="center">
-                  <Typography> đã thuê:</Typography>
-                  <Divider type="vertical" />
-                  <Typography> chưa thuê:</Typography>
-                  <Divider type="vertical" />
-                  <Typography> chưa thu phí:</Typography>
                 </Flex>
               </Col>
             </Row>

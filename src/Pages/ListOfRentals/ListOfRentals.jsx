@@ -37,9 +37,6 @@ const ListOfRentals = () => {
   const [listHouse, setListHouse] = React.useState([]);
   React.useEffect(() => {
     setTitle("DANH SÁCH TRỌ");
-  }, []);
-
-  React.useEffect(() => {
     handleSearch();
   }, []);
   React.useEffect(() => {

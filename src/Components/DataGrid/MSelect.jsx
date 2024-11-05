@@ -19,7 +19,6 @@ export function renderCellEditSelect({
         onRowChange({ ...row, [key]: value, isEdit: true }, true);
       }}
       autoFocus
-      allowClear
     />
   );
 }

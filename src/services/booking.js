@@ -1,4 +1,3 @@
-import { message } from "antd";
 import { poster } from "./BaseService";
 
 const endPointUser = "/booking";

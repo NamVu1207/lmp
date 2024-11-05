@@ -1,16 +1,4 @@
-import {
-  Button,
-  Card,
-  Col,
-  DatePicker,
-  Divider,
-  Flex,
-  Input,
-  Menu,
-  Row,
-  Select,
-  Typography,
-} from "antd";
+import { Card, Col, Divider, Flex, Form, message, Row, Typography } from "antd";
 import React from "react";
 import { useOutletContext } from "react-router-dom";
 import Grid, {
@@ -19,119 +7,161 @@ import Grid, {
   selectionTypes,
 } from "../../Components/DataGrid/index.jsx";
 import { basicRenderColumns } from "../../utils/dataTable.utils.jsx";
+import { Filter, filterType } from "../../Components/Fillter/index.jsx";
+import { del, load, save } from "../../services/staff.js";
+import ToolBar, {
+  toolBarButtonTypes,
+} from "../../Components/Toolbar/index.jsx";
 
 const Staff = () => {
   const onFocus = () => {};
-  const gridRef = React.createRef();
-  const [rows, setRows] = React.useState([]);
   const [title, setTitle] = useOutletContext();
-  const Info = [
-    {
-      id: 1,
-      house_name: "green house",
-      name: "phòng 01",
-      customer_name: "Nguyen Van A",
-      elec_start: 12,
-      elec_end: 23,
-      water_start: 1,
-      water_end: 12,
-      reading_date: "2024-10-05",
-      elec_cost: 4000,
-      water_cost: 2000,
-    },
-    {
-      id: 2,
-      house_name: "green house",
-      name: "phòng 01",
-      customer_name: "Nguyen Van A",
-      elec_start: 12,
-      elec_end: 23,
-      water_start: 1,
-      water_end: 12,
-      reading_date: "2024-11-05",
-      elec_cost: 4000,
-      water_cost: 2000,
-    },
-  ];
+  const gridRef = React.createRef();
+  const [form] = Form.useForm();
+  const [rows, setRows] = React.useState([]);
+  const newItem = {
+    id: "",
+    employee_name: "",
+    phone: "",
+    username: "",
+    pass: "",
+    department: "",
+    isNew: true,
+  };
   const columns = basicRenderColumns([
+    {
+      key: "STT",
+      name: "STT",
+      width: 60,
+    },
     {
       key: "id",
       name: "ID",
-      width: 60,
-      visible: false,
+      visible: true,
     },
     {
-      key: "house_name",
-      name: "Nhà",
+      key: "employee_name",
+      name: "Tên nhân viên",
+      type: columnTypes.TextEditor,
+      editable: true,
+      required: true,
+    },
+    {
+      key: "phone",
+      name: "SĐT",
+      type: columnTypes.TextEditor,
+      editable: true,
+      required: true,
+    },
+    {
+      key: "username",
+      name: "Tên tài khoản",
+      type: columnTypes.TextEditor,
+      editable: true,
+      required: true,
+    },
+    {
+      key: "pass",
+      name: "Mật khẩu",
       type: columnTypes.TextEditor,
       editable: true,
     },
     {
-      key: "name",
-      name: "Phòng",
+      key: "department",
+      name: "bộ phận",
       type: columnTypes.TextEditor,
       editable: true,
-    },
-    {
-      key: "customer_name",
-      name: "Khách thuê",
-      type: columnTypes.TextEditor,
-      editable: true,
-    },
-    {
-      key: "elec_start",
-      name: "cs diện đầu",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "elec_end",
-      name: "cs diện cuối",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "water_start",
-      name: "cs nước đầu",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "water_end",
-      name: "cs nước cuối",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "elec_cost",
-      name: "Tiền điện",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "water_cost",
-      name: "Tiền nước",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "month",
-      name: "Tháng",
-      type: columnTypes.TextEditor,
-    },
-    {
-      key: "year",
-      name: "năm",
-      type: columnTypes.TextEditor,
+      required: true,
     },
   ]);
   React.useEffect(() => {
-    setTitle("TIỀN TRỌ");
+    setTitle("DỊCH VỤ");
+    handleSearch();
   }, []);
-  React.useEffect(() => {
-    setRows(
-      Info.map((item) => {
-        const { reading_date, ...rest } = item;
-        const [year, month] = reading_date.split("-");
-        return { ...rest, year, month };
-      })
+  const CheckValidate = (validate) => {
+    if (validate.validate.length === 0) {
+      message.warning("không có gì thay đổi");
+      return false;
+    }
+    if (!validate.isCheck) {
+      message.warning("vui lòng điền đầy đủ thông tin!");
+      return false;
+    }
+    return true;
+  };
+  const handleSearch = async () => {
+    try {
+      const filter = form.getFieldsValue();
+      const result = await load(filter);
+      if (result.data.length > 0) {
+        const arr = result.data.map((item) => {
+          return {
+            ...item,
+            house_name: `${item.house_id}-${item.house_name}`,
+          };
+        });
+        setRows(arr);
+      } else setRows([]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleAddRow = () => {
+    setRows([...rows, newItem]);
+  };
+  const handleDeleteRow = async (listRow) => {
+    if (listRow.length === 0) {
+      message.warning("vui lòng chọn dòng cần xóa");
+      return;
+    }
+    const listRowDel = rows.filter(
+      (obj) => listRow.some((STT) => obj.STT === STT) && !obj.isNew
     );
-  }, []);
-  const handleChange = () => {};
+    if (listRowDel.length > 0) {
+      const result = await del({ data: listRowDel });
+      console.log(result);
+      result.data.message.map((item) =>
+        item.success
+          ? message.success(item.message)
+          : message.warning(item.message)
+      );
+    }
+    gridRef.current?.setSelectedRows([]);
+    handleSearch();
+  };
+  const handleSaveData = async () => {
+    try {
+      const validate = gridRef.current?.Validate();
+      if (!CheckValidate(validate)) return;
+      const listRow = rows.filter((obj) =>
+        validate.validate.some((val) => obj.STT === val.STT)
+      );
+      const result = await save({ datas: listRow });
+      if (result.success) {
+        result.data.message.map((item) =>
+          item.success
+            ? message.success(item.message)
+            : message.warning(item.message)
+        );
+        handleSearch();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const buttonConfirm = async (props) => {
+    switch (props.type) {
+      case "delete":
+        handleDeleteRow([...gridRef.current?.getSelectedRows()]);
+        break;
+      case "add":
+        handleAddRow();
+        break;
+      case "save":
+        handleSaveData();
+        break;
+    }
+  };
   return (
     <>
       <Row gutter={[8, 16]}>
@@ -139,54 +169,30 @@ const Staff = () => {
           <Card style={{ padding: "12px" }}>
             <Row gutter={[8, 8]}>
               <Col span={12}>
-                <Flex gap="middle">
-                  <DatePicker onChange={handleChange} picker="month" />
-                  <Select
-                    placeholder="Nhà"
-                    style={{
-                      width: 160,
-                    }}
-                    allowClear
-                    onChange={handleChange}
-                    options={[
-                      {
-                        value: "H01",
-                        label: "green house",
+                <Filter
+                  form={form}
+                  onSearch={handleSearch}
+                  items={[
+                    {
+                      type: filterType.input,
+                      config: {
+                        placeholder: "Tên nhân viên",
+                        name: "staff_name",
                       },
-                      {
-                        value: "H02",
-                        label: "red house",
-                      },
+                    },
+                  ]}
+                />
+              </Col>
+              <Col span={12}>
+                <Flex justify="flex-end">
+                  <ToolBar
+                    buttonConfig={[
+                      toolBarButtonTypes.add,
+                      toolBarButtonTypes.delete,
+                      toolBarButtonTypes.save,
                     ]}
+                    handleConfirm={buttonConfirm}
                   />
-                  <Input
-                    style={{ width: "160px" }}
-                    placeholder="Tên phòng"
-                  ></Input>
-                  <Button type="primary">Tìm kiếm</Button>
-                </Flex>
-              </Col>
-              <Col offset={7} span={5}>
-                <Flex justify="space-around" align="center">
-                  <Button type="primary">Xuất Excel</Button>
-                  <Button type="primary" style={{ backgroundColor: "#ffb500" }}>
-                    Thêm
-                  </Button>
-                  <Button type="primary" danger>
-                    Xóa
-                  </Button>
-                  <Button type="primary" style={{ backgroundColor: "#48e7db" }}>
-                    Lưu
-                  </Button>
-                </Flex>
-              </Col>
-              <Col span={24}>
-                <Flex align="center">
-                  <Typography> đã thuê:</Typography>
-                  <Divider type="vertical" />
-                  <Typography> chưa thuê:</Typography>
-                  <Divider type="vertical" />
-                  <Typography> chưa thu phí:</Typography>
                 </Flex>
               </Col>
             </Row>
@@ -197,7 +203,7 @@ const Staff = () => {
             <Grid
               ref={gridRef}
               direction="ltr"
-              columnKeySelected="id"
+              columnKeySelected="STT"
               selection={selectionTypes.multi}
               columns={columns}
               rows={rows}

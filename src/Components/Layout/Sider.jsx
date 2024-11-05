@@ -11,37 +11,37 @@ const Sider = () => {
     {
       key: "Dashboard",
       name: "Dashboard",
-      label: <Link to={"/"}>Tổng quát</Link>,
+      label: <Link to={"/manager"}>Tổng quát</Link>,
       icon: <HomeFilled />,
     },
     {
       key: "Room",
       name: "Room",
-      label: <Link to={"/Room"}>Danh sách trọ</Link>,
+      label: <Link to={"/manager/Room"}>Danh sách trọ</Link>,
       icon: <InteractionFilled />,
     },
     {
       key: "DataEW",
       name: "DataEW",
-      label: <Link to={"/DataEW"}>Chỉ số điện-nước</Link>,
+      label: <Link to={"/manager/DataEW"}>Chỉ số điện-nước</Link>,
       icon: <MessageFilled />,
     },
     {
       key: "Rentalfee",
       name: "Rentalfee",
-      label: <Link to={"/Rentalfee"}>Tiền trọ</Link>,
+      label: <Link to={"/manager/Rentalfee"}>Tiền trọ</Link>,
       icon: <MessageFilled />,
     },
     {
       key: "Booking",
       name: "Booking",
-      label: <Link to={"/Booking"}>Cọc giữ phòng</Link>,
+      label: <Link to={"/manager/Booking"}>Cọc giữ phòng</Link>,
       icon: <MessageFilled />,
     },
     {
       key: "Otherfee",
       name: "Otherfee",
-      label: <Link to={"/Otherfee"}>Phát sinh</Link>,
+      label: <Link to={"/manager/Otherfee"}>Phát sinh</Link>,
       icon: <MessageFilled />,
     },
     {
@@ -52,23 +52,23 @@ const Sider = () => {
       children: [
         {
           key: "Customer",
-          label: <Link to={"/Customer"}>Người thuê</Link>,
+          label: <Link to={"/manager/Customer"}>Người thuê</Link>,
         },
         {
           key: "House",
-          label: <Link to={"/House"}>Nhà trọ</Link>,
+          label: <Link to={"/manager/House"}>Nhà trọ</Link>,
         },
         {
           key: "ListRoom",
-          label: <Link to={"/ListRoom"}>Phòng trọ</Link>,
+          label: <Link to={"/manager/ListRoom"}>Phòng trọ</Link>,
         },
         {
           key: "Staff",
-          label: <Link to={"/Staff"}>Nhân viên</Link>,
+          label: <Link to={"/manager/Staff"}>Nhân viên</Link>,
         },
         {
           key: "Service",
-          label: <Link to={"/Service"}>Dịch vụ</Link>,
+          label: <Link to={"/manager/Service"}>Dịch vụ</Link>,
         },
       ],
     },
