@@ -1,6 +1,8 @@
 import { Card, Col, Image, Modal, Row } from "antd";
+import imgroom from "../../assets/view_room.jpg";
 
 const ModalDetalRoom = ({ room, isOpen = false, onClose }) => {
+  // const imgroom = "./view_room.jpg";
   return (
     <Modal
       title={room.name}
@@ -13,7 +15,7 @@ const ModalDetalRoom = ({ room, isOpen = false, onClose }) => {
     >
       <Row gutter={[16, 8]}>
         <Col span={14}>
-          <Image src="./view_room.jpg"></Image>
+          <Image src={imgroom}></Image>
         </Col>
         <Col span={10}>
           <Card
@@ -36,7 +38,11 @@ const ModalDetalRoom = ({ room, isOpen = false, onClose }) => {
                 ? "chưa thuê"
                 : "đã đặt cọc"}
             </p>
-            {room.is_rented === "rented" ? <p>- người thuê: {room.customer_name}</p> : <></>}
+            {room.is_rented === "rented" ? (
+              <p>- người thuê: {room.customer_name}</p>
+            ) : (
+              <></>
+            )}
           </Card>
         </Col>
       </Row>

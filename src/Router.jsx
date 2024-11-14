@@ -14,26 +14,52 @@ import Service from "./Pages/Management/Service.jsx";
 import Staff from "./Pages/Management/Staff.jsx";
 import ListRoom from "./Pages/Management/ListRoom.jsx";
 import House from "./Pages/Management/House.jsx";
+import CustomerService from "./Pages/CustomerService/CustomerService.jsx";
+import LayoutManager from "./Components/Layout/LayoutManager.jsx";
+import Error from "./Pages/Error/Error.jsx";
+import LayoutCustomer from "./Components/Layout/LayoutCustomer.jsx";
+import Order from "./Pages/Order/Order.jsx";
+import Home from "./Pages/Home/Home.jsx";
+import Info from "./Pages/Home/Info.jsx";
+import Contact from "./Pages/Home/Contact.jsx";
 
 const router = createBrowserRouter([
   {
-    path: "/manager",
+    path: "/",
     element: <Layout />,
     children: [
-      { path: "", element: <Dashboard /> },
-      { path: "Room", element: <ListOfRentals /> },
-      { path: "DataEW", element: <DataEW /> },
-      { path: "Rentalfee", element: <Rentalfee /> },
-      { path: "Booking", element: <Booking /> },
-      { path: "OtherFee", element: <OtherFee /> },
-      { path: "Customer", element: <Customer /> },
-      { path: "Service", element: <Service /> },
-      { path: "Staff", element: <Staff /> },
-      { path: "ListRoom", element: <ListRoom /> },
-      { path: "House", element: <House /> },
+      { path: "", element: <Home /> },
+      { path: "Info", element: <Info /> },
+      { path: "Contact", element: <Contact /> },
+      {
+        path: "customer",
+        element: <LayoutCustomer />,
+        children: [
+          { path: "", element: <CustomerService /> },
+          { path: "Order", element: <Order /> },
+        ],
+      },
+      {
+        path: "manager",
+        element: <LayoutManager />,
+        children: [
+          { path: "", element: <Dashboard /> },
+          { path: "Room", element: <ListOfRentals /> },
+          { path: "DataEW", element: <DataEW /> },
+          { path: "Rentalfee", element: <Rentalfee /> },
+          { path: "Booking", element: <Booking /> },
+          { path: "OtherFee", element: <OtherFee /> },
+          { path: "Customer", element: <Customer /> },
+          { path: "Service", element: <Service /> },
+          { path: "Staff", element: <Staff /> },
+          { path: "ListRoom", element: <ListRoom /> },
+          { path: "House", element: <House /> },
+          { path: "Order", element: <Order /> },
+        ],
+      },
+      { path: "error", element: <Error /> },
     ],
   },
-  { path: "/login", element: <Login /> },
 ]);
 
 export default function Router() {

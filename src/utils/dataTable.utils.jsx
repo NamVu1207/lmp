@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import MCheckBox from "../Components/DataGrid/MCheckBox";
 import { FORMAT_DATETIME } from "../constants";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import MButton from "../Components/DataGrid/MButton";
 dayjs.extend(customParseFormat);
 export const dataConverTable = ({ column, row, onRowChange }, itemColumn) => {
   const keyValue = column.key;
@@ -41,6 +42,9 @@ export const dataConverTable = ({ column, row, onRowChange }, itemColumn) => {
 
   const typeColumn = itemColumn.type;
   switch (typeColumn) {
+    case "Button":
+      dataConvert = MButton({ row: row });
+      break;
     case "Checkbox":
       dataConvert = MCheckBox({
         name: keyValue,

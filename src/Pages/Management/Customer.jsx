@@ -1,6 +1,5 @@
 import { Card, Col, Divider, Flex, Form, message, Row, Typography } from "antd";
 import React from "react";
-import { useOutletContext } from "react-router-dom";
 import Grid, {
   columnTypes,
   paginationTypes,
@@ -29,7 +28,6 @@ const Customer = () => {
   const [rows, setRows] = React.useState([]);
   const [listHouse, setListHouse] = React.useState([]);
   const [listRoom, setListRoom] = React.useState([]);
-  const [title, setTitle] = useOutletContext();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const newItem = {
     id: "",
@@ -166,7 +164,6 @@ const Customer = () => {
     },
   ]);
   React.useEffect(() => {
-    setTitle("KHÁCH HÀNG");
     GetListHouse();
     GetListRoom();
     handleSearch();
@@ -269,7 +266,6 @@ const Customer = () => {
         );
       } else {
         const result = await save({ datas: listRow });
-        console.log(result);
         if (result.success) {
           result.data.message.map((item) =>
             item.success
@@ -293,7 +289,6 @@ const Customer = () => {
     );
     if (listRowDel.length > 0) {
       const result = await del({ data: listRowDel });
-      console.log(result);
       result.data.message.map((item) =>
         item.success
           ? message.success(item.message)
@@ -318,7 +313,7 @@ const Customer = () => {
   };
   return (
     <>
-      <Row gutter={[8, 16]}>
+      <Row gutter={[0, 16]}>
         <Col span={24}>
           <Card style={{ padding: "12px" }}>
             <Row gutter={[8, 8]}>
@@ -350,6 +345,7 @@ const Customer = () => {
                         ],
                         placeholder: "trạng thái thuê",
                         name: "contractActive",
+                        initialValue: true,
                       },
                     },
                     {

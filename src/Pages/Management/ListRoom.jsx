@@ -1,6 +1,5 @@
 import { Card, Col, Divider, Flex, Form, message, Row, Typography } from "antd";
 import React from "react";
-import { useOutletContext } from "react-router-dom";
 import Grid, {
   columnTypes,
   paginationTypes,
@@ -21,7 +20,6 @@ import {
 } from "../../services/listroom.js";
 
 const ListRoom = () => {
-  const [title, setTitle] = useOutletContext();
   const onFocus = () => {};
   const gridRef = React.createRef();
   const gridRefDetail = React.createRef();
@@ -164,7 +162,6 @@ const ListRoom = () => {
   ]);
 
   React.useEffect(() => {
-    setTitle("PHỒNG TRỌ");
     GetListHouse();
     handleSearch();
     GetServ();
@@ -191,7 +188,13 @@ const ListRoom = () => {
   const GetServ = async () => {
     const result = await getserv();
     if (result.data.length > 0) {
-      return setListServ(result.data);
+      const arr = result.data.map((item) => ({
+        ...item,
+        serv_name: `${item.serv_name} ( ${new Intl.NumberFormat().format(
+          item.price
+        )} / ${item.unit} )`,
+      }));
+      return setListServ(arr);
     }
   };
   const CheckValidate = (validate, validateDetail) => {
@@ -323,7 +326,7 @@ const ListRoom = () => {
   };
   return (
     <>
-      <Row gutter={[8, 16]}>
+      <Row gutter={[0, 16]}>
         <Col span={24}>
           <Card style={{ padding: "12px" }}>
             <Row gutter={[8, 8]}>

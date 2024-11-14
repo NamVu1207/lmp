@@ -16,7 +16,6 @@ import {
   Typography,
 } from "antd";
 import React from "react";
-import { useOutletContext } from "react-router-dom";
 import Grid, {
   columnTypes,
   paginationTypes,
@@ -43,7 +42,6 @@ const DataEW = () => {
   const [form] = Form.useForm();
   const gridRef = React.createRef();
   const [rows, setRows] = React.useState([]);
-  const [title, setTitle] = useOutletContext();
   const [listHouse, setListHouse] = React.useState([]);
   const [listRoom, setListRoom] = React.useState([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -163,7 +161,6 @@ const DataEW = () => {
     },
   ]);
   React.useEffect(() => {
-    setTitle("CHỈ SỐ ĐIỆN - NƯỚC");
     handleSearch();
     GetListHouse();
     GetListRoom();
@@ -275,7 +272,6 @@ const DataEW = () => {
       const listRow = rows.filter((obj) =>
         validate.validate.some((val) => obj.STT === val.STT)
       );
-      console.log(listRow);
       if (!checkEwValid(listRow))
         return message.warning("chỉ số điện/nước cuối phải lớn hơn chỉ số đầu");
       else {
@@ -308,7 +304,7 @@ const DataEW = () => {
   };
   return (
     <>
-      <Row gutter={[8, 16]}>
+      <Row gutter={[0, 16]}>
         <Col span={24}>
           <Card style={{ padding: "12px" }}>
             <Row gutter={[8, 8]}>

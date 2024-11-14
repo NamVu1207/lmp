@@ -3,7 +3,7 @@ import { Select, Form } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 const SelectFillter = ({
   name = "",
-  initialValues = "",
+  initialValue = null,
   options = [],
   placeholder = "",
 }) => {
@@ -26,6 +26,7 @@ const SelectFillter = ({
   const formInstance = Form.useFormInstance();
   return (
     <Select
+      defaultValue={initialValue}
       style={{ width: "160px" }}
       allowClear
       showSearch

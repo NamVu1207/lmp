@@ -22,7 +22,7 @@ http.interceptors.response.use(undefined, function (error) {
     error.response &&
     error.response.status === UNAUTHORIZED_ERROR.status
   ) {
-    window.location.href = "/login";
+    window.location.href = "/";
   }
 });
 

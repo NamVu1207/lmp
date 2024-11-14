@@ -16,7 +16,6 @@ import dayjs from "dayjs";
 import { UserOutlined } from "@ant-design/icons";
 import TransactionOverviewItem from "./TransactionOverviewItem.jsx";
 import VirtualList from "rc-virtual-list";
-import { useNavigate, useOutletContext } from "react-router-dom";
 import {
   PieChart,
   Pie,
@@ -29,26 +28,18 @@ import {
   Bar,
 } from "recharts";
 import { booking, expenses, roomCount } from "../../services/dashboard.js";
-
+import imgHouse from "../../assets/house.png";
 const { Title } = Typography;
 const { Search } = Input;
 
 const COLORS = ["#9d7afc", "#82ca9d", "#ffc658"];
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-  const [title, setTitle] = useOutletContext();
   const [itemBarChart, setItemBarChart] = useState([]);
   const [itemPieChart, setItemPieChart] = useState([]);
   const [itemBooking, setItemBooking] = useState([]);
-  const imgHouse = "./house.png";
 
   React.useEffect(() => {
-    setTitle("TỔNG QUÁT");
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-    }
     getItemBarChart();
     getItemPieChart();
     getBooking();
@@ -131,7 +122,7 @@ const Dashboard = () => {
   const handleLoadData = () => {}; // xu ly nap ddu lieu
   const handleExport = () => {}; // xu ly xuat excel
   return (
-    <Row gutter={[30, 30]}>
+    <Row gutter={[16, 16]}>
       <Col span={15}>
         <Card
           style={{

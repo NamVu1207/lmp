@@ -10,14 +10,12 @@ const cpathUser = (action) => {
 export const Login = async (value) => {
   let result;
   try {
-    const res = await poster(cpathUser("login"), {
-      username: value.username,
-      password: value.password,
-    });
+    const res = await poster(cpathUser("login"), value);
     if (res.status === 200) {
       message.success(res.message);
       localStorage.setItem("token", res.access_token);
-      return res;
+      localStorage.setItem("user", JSON.stringify(res.user[0]));
+      return res.user[0];
     } else if (res.status === 400) message.warning(res.message);
     return;
   } catch (error) {

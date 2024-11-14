@@ -1,3 +1,5 @@
+import { useNavigate, Link } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
 import {
   Typography,
   Row,
@@ -8,6 +10,7 @@ import {
   Button,
   Flex,
   message,
+  Radio,
 } from "antd";
 import {
   UserOutlined,
@@ -16,25 +19,36 @@ import {
   EyeInvisibleOutlined,
   LoginOutlined,
 } from "@ant-design/icons";
-import { useNavigate, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { auth } from "../../services";
+import { DataContext } from "../../Components/Layout/Layout";
 
 const { Title } = Typography;
-const Login = () => {
+const Login = ({ closeModal }) => {
+  const [form] = Form.useForm();
+  const { setIsLogin } = useContext(DataContext);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+    const parsedUser = JSON.parse(storedUser);
     if (token) {
-      navigate("/");
+      setIsLogin(true);
+      if (Number(parsedUser.type) === 2) navigate("/manager");
+      else if (Number(parsedUser.type) === 1) navigate("/customer");
     }
-  });
+  }, []);
   const handleSubmit = async (e) => {
     setIsLoading(true);
     try {
       const result = await auth.Login(e);
-      if (result) navigate("/manager");
+      if (result) {
+        if (result.type === 2) navigate("/manager");
+        else if (result.type === 1) navigate("/customer");
+        form.resetFields();
+        setIsLogin(true);
+        closeModal();
+      }
     } catch (error) {
       console.log(error);
     }
@@ -42,15 +56,16 @@ const Login = () => {
   };
   return (
     <Row align={"middle"} justify={"center"} className="LoginWrapper">
-      <Col className="Col" span={12}>
-        <Row gutter={[0, 36]} style={{ width: "45%" }}>
+      <Col className="Col" span={24}>
+        <Row gutter={[0, 36]}>
           <Col className="Col" span={24}>
             <Title level={3} style={{ margin: "0px" }}>
-              Quản lý nhà trọ
+              ĐĂNG NHẬP
             </Title>
           </Col>
           <Col className="Col" span={24}>
             <Form
+              form={form}
               style={{ width: "100%" }}
               wrapperCol={{ span: 24 }}
               name="basic"
@@ -60,6 +75,20 @@ const Login = () => {
               autoComplete="off"
               onFinish={handleSubmit}
             >
+              <Form.Item
+                name={"usertype"}
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tên đăng nhập!",
+                  },
+                ]}
+              >
+                <Radio.Group>
+                  <Radio value={1}>Khách hàng</Radio>
+                  <Radio value={2}>Quản lý</Radio>
+                </Radio.Group>
+              </Form.Item>
               <Form.Item
                 name="username"
                 rules={[

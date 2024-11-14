@@ -10,7 +10,6 @@ import {
   Typography,
 } from "antd";
 import React from "react";
-import { useOutletContext } from "react-router-dom";
 import Grid, {
   columnTypes,
   paginationTypes,
@@ -31,7 +30,6 @@ const Rentalfee = () => {
   const [rows, setRows] = React.useState([]);
   const [listHouse, setListHouse] = React.useState([]);
   const [listRoom, setListRoom] = React.useState([]);
-  const [title, setTitle] = useOutletContext();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const columns = basicRenderColumns([
     {
@@ -99,7 +97,6 @@ const Rentalfee = () => {
     },
   ]);
   React.useEffect(() => {
-    setTitle("TIỀN PHÒNG");
     GetListHouse();
     GetListRoom();
     handleSearch();
@@ -169,7 +166,7 @@ const Rentalfee = () => {
   };
   return (
     <>
-      <Row gutter={[8, 16]}>
+      <Row gutter={[0, 16]}>
         <Col span={24}>
           <Card style={{ padding: "12px" }}>
             <Row gutter={[8, 8]}>

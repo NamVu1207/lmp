@@ -1,6 +1,5 @@
 import { Card, Col, Divider, Flex, Form, message, Row, Typography } from "antd";
 import React from "react";
-import { useOutletContext } from "react-router-dom";
 import Grid, {
   columnTypes,
   paginationTypes,
@@ -15,7 +14,6 @@ import ToolBar, {
 
 const Staff = () => {
   const onFocus = () => {};
-  const [title, setTitle] = useOutletContext();
   const gridRef = React.createRef();
   const [form] = Form.useForm();
   const [rows, setRows] = React.useState([]);
@@ -75,7 +73,6 @@ const Staff = () => {
     },
   ]);
   React.useEffect(() => {
-    setTitle("DỊCH VỤ");
     handleSearch();
   }, []);
   const CheckValidate = (validate) => {
@@ -93,6 +90,8 @@ const Staff = () => {
     try {
       const filter = form.getFieldsValue();
       const result = await load(filter);
+      console.log(result);
+
       if (result.data.length > 0) {
         const arr = result.data.map((item) => {
           return {
@@ -119,7 +118,6 @@ const Staff = () => {
     );
     if (listRowDel.length > 0) {
       const result = await del({ data: listRowDel });
-      console.log(result);
       result.data.message.map((item) =>
         item.success
           ? message.success(item.message)
@@ -164,7 +162,7 @@ const Staff = () => {
   };
   return (
     <>
-      <Row gutter={[8, 16]}>
+      <Row gutter={[0, 16]}>
         <Col span={24}>
           <Card style={{ padding: "12px" }}>
             <Row gutter={[8, 8]}>

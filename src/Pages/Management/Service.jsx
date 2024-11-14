@@ -1,6 +1,5 @@
 import { Card, Col, Divider, Flex, Form, message, Row, Typography } from "antd";
 import React from "react";
-import { useOutletContext } from "react-router-dom";
 import Grid, {
   columnTypes,
   paginationTypes,
@@ -20,13 +19,14 @@ const Service = () => {
   const [form] = Form.useForm();
   const [rows, setRows] = React.useState([]);
   const [listHouse, setListHouse] = React.useState([]);
-  const [title, setTitle] = useOutletContext();
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const newItem = {
     id: "",
     house_name: "",
     serv_name: "",
     price: 0,
+    unit: "",
+    service_type: "fixed",
     active: true,
     note: "",
     isNew: true,
@@ -68,6 +68,30 @@ const Service = () => {
       required: true,
     },
     {
+      key: "unit",
+      name: "đơn vị",
+      type: columnTypes.TextEditor,
+      editable: true,
+      required: true,
+    },
+    {
+      key: "service_type",
+      name: "loại dịch vụ",
+      type: columnTypes.Select,
+      options: [
+        {
+          value: "fixed",
+          label: "cố dịnh",
+        },
+        {
+          value: "ordered",
+          label: "order",
+        },
+      ],
+      editable: true,
+      required: true,
+    },
+    {
       key: "active",
       name: "trạng thái",
       type: columnTypes.Checkbox,
@@ -81,7 +105,6 @@ const Service = () => {
     },
   ]);
   React.useEffect(() => {
-    setTitle("DỊCH VỤ");
     GetListHouse();
     handleSearch();
   }, []);
@@ -147,7 +170,6 @@ const Service = () => {
     );
     if (listRowDel.length > 0) {
       const result = await del({ data: listRowDel });
-      console.log(result);
       result.data.message.map((item) =>
         item.success
           ? message.success(item.message)
@@ -192,7 +214,7 @@ const Service = () => {
   };
   return (
     <>
-      <Row gutter={[8, 16]}>
+      <Row gutter={[0, 16]}>
         <Col span={24}>
           <Card style={{ padding: "12px" }}>
             <Row gutter={[8, 8]}>

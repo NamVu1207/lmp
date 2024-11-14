@@ -51,7 +51,11 @@ export const Filter = (
           const Component = pickComponent(type);
           return (
             <Col key={index}>
-              <Form.Item style={{ marginBottom: "4px" }} name={config.name}>
+              <Form.Item
+                style={{ marginBottom: "4px" }}
+                name={config.name}
+                initialValue={config?.initialValue}
+              >
                 <Component {...config} />
               </Form.Item>
             </Col>

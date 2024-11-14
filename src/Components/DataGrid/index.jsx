@@ -28,6 +28,7 @@ export const selectionTypes = {
   none: "none",
 };
 export const columnTypes = {
+  Button: "Button",
   DatePicker: "DatePicker",
   TimePicker: "TimePicker",
   TextEditor: "TextEditor",
@@ -43,12 +44,7 @@ export const paginationTypes = {
 
 const { Title } = Typography;
 
-const getEditCell = (
-  key,
-  cellType,
-  options = [],
-  baseColumn,
-) => {
+const getEditCell = (key, cellType, options = [], baseColumn) => {
   switch (cellType) {
     case columnTypes.DatePicker:
       return ({ row, onRowChange }) =>

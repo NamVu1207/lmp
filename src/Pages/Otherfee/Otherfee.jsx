@@ -1,6 +1,5 @@
 import { Card, Col, Divider, Flex, Form, message, Row, Typography } from "antd";
 import React from "react";
-import { useOutletContext } from "react-router-dom";
 import Grid, {
   columnTypes,
   paginationTypes,
@@ -15,7 +14,6 @@ import ToolBar, {
 
 const Otherfee = () => {
   const onFocus = () => {};
-  const [title, setTitle] = useOutletContext();
   const gridRef = React.createRef();
   const [form] = Form.useForm();
   const [rows, setRows] = React.useState([]);
@@ -81,7 +79,6 @@ const Otherfee = () => {
     },
   ]);
   React.useEffect(() => {
-    setTitle("PHÍ PHÁT SINH");
     GetListHouse();
     handleSearch();
   }, []);
@@ -139,7 +136,6 @@ const Otherfee = () => {
     );
     if (listRowDel.length > 0) {
       const result = await del({ data: listRowDel });
-      console.log(result);
       result.data.message.map((item) =>
         item.success
           ? message.success(item.message)
@@ -184,7 +180,7 @@ const Otherfee = () => {
   };
   return (
     <>
-      <Row gutter={[8, 16]}>
+      <Row gutter={[0, 16]}>
         <Col span={24}>
           <Card style={{ padding: "12px" }}>
             <Row gutter={[8, 8]}>

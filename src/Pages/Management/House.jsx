@@ -1,6 +1,5 @@
 import { Card, Col, Flex, Form, message, Row } from "antd";
 import React from "react";
-import { useOutletContext } from "react-router-dom";
 import Grid, {
   columnTypes,
   paginationTypes,
@@ -21,7 +20,6 @@ import { DataContext } from "../../Components/Layout/Layout.jsx";
 const House = () => {
   const onFocus = () => {};
   const gridRef = React.createRef();
-  const [title, setTitle] = useOutletContext();
   const [form] = Form.useForm();
   const [rows, setRows] = React.useState([]);
   const [city, setCity] = React.useState([]);
@@ -33,7 +31,7 @@ const House = () => {
   const [manager, setManager] = React.useState([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const dataAddr = React.useContext(DataContext);
+  const {fullAddr} = React.useContext(DataContext);
 
   const newItem = {
     id: "",
@@ -115,11 +113,10 @@ const House = () => {
   ]);
 
   React.useEffect(() => {
-    setTitle("NHÀ");
     getCityData();
-    setCity(dataAddr.city);
-    setDistrict(dataAddr.district);
-    setWard(dataAddr.ward);
+    setCity(fullAddr.city);
+    setDistrict(fullAddr.district);
+    setWard(fullAddr.ward);
     GetListEmployee();
     handleSearch();
   }, []);
@@ -181,7 +178,6 @@ const House = () => {
     );
     if (listRowDel.length > 0) {
       const result = await del({ data: listRowDel });
-      console.log(result);
       result.data.message.map((item) =>
         item.success
           ? message.success(item.message)
@@ -252,7 +248,7 @@ const House = () => {
 
   return (
     <>
-      <Row gutter={[8, 16]}>
+      <Row gutter={[0, 16]}>
         <Col span={24}>
           <Card style={{ padding: "12px" }}>
             <Row gutter={[8, 8]}>
@@ -266,7 +262,7 @@ const House = () => {
                       config: {
                         placeholder: "Thành phố",
                         name: "city",
-                        options: dataAddr.city,
+                        options: fullAddr.city,
                       },
                     },
                   ]}

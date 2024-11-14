@@ -1,6 +1,6 @@
 import { poster } from "./BaseService";
 
-const endPointUser = "/staff";
+const endPointUser = "/order";
 
 const cpath = (action) => {
   return `${endPointUser}/${action}`;
@@ -11,8 +11,8 @@ export const load = async (data) => {
   return result;
 };
 
-export const del = async (datas) => {
-  const result = await poster(cpath("delete"), datas);
+export const confirm = async (datas) => {
+  const result = await poster(cpath("confirm"), datas);
   return result;
 };
 

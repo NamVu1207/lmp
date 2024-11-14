@@ -2,34 +2,25 @@
   padding: 0px;
   padding-top: 8px;
 }
-.SiderTop {
+@mixin siderTitle {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 20px 0px;
-  img {
-    width: 63px;
-    padding-bottom: 4px;
-  }
-  @mixin siderTitle {
-    display: flex;
-    align-items: self-end;
-    letter-spacing: 3px;
-  }
-  .SiderTitle_secondary {
-    @include siderTitle;
-    color: $primary_color;
-    font-size: 1rem;
-    font-weight: 700;
-  }
-  .SiderTitle_primary {
-    @include siderTitle;
-    color: $red_color;
-    padding-right: 6px;
-    font-size: 1.2rem;
-    font-weight: 900;
-  }
+  align-items: self-end;
+  letter-spacing: 3px;
 }
+.SiderTitle_secondary {
+  @include siderTitle;
+  color: $primary_color;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.SiderTitle_primary {
+  @include siderTitle;
+  color: $red_color;
+  padding-right: 6px;
+  font-size: 1.6rem;
+  font-weight: 900;
+}
+
 .SiderMenu {
   background-color: transparent;
   display: flex;

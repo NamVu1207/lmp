@@ -16,7 +16,6 @@ import {
   Modal,
 } from "antd";
 import { ExclamationCircleFilled } from "@ant-design/icons";
-import { useOutletContext } from "react-router-dom";
 import ListRoom from "./ListRoom";
 import ModalCreateHouse from "../../Components/Modal/ModalCreateHouse";
 import { Filter, filterType } from "../../Components/Fillter";
@@ -27,7 +26,6 @@ const numberRoomRented = 14;
 
 const ListOfRentals = () => {
   const [form] = Form.useForm();
-  const [title, setTitle] = useOutletContext();
   const [menuItem, setMenuItem] = React.useState([]);
   const [menuKey, setMenuKey] = React.useState("");
   const [houseSelected, setHouseSelected] = React.useState({});
@@ -36,7 +34,6 @@ const ListOfRentals = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [listHouse, setListHouse] = React.useState([]);
   React.useEffect(() => {
-    setTitle("DANH SÁCH TRỌ");
     handleSearch();
   }, []);
   React.useEffect(() => {
@@ -127,7 +124,7 @@ const ListOfRentals = () => {
 
   return (
     <>
-      <Row gutter={[8, 16]}>
+      <Row gutter={[0, 16]}>
         <Col span={24}>
           <Card style={{ padding: "12px" }}>
             <Row gutter={[8, 8]}>

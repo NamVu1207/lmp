@@ -15,7 +15,6 @@ import {
   Typography,
 } from "antd";
 import React from "react";
-import { useOutletContext } from "react-router-dom";
 import Grid, {
   columnTypes,
   paginationTypes,
@@ -43,7 +42,6 @@ const Booking = () => {
   const [form] = Form.useForm();
   const [form1] = Form.useForm();
   const [rows, setRows] = React.useState([]);
-  const [title, setTitle] = useOutletContext();
   const [listHouse, setListHouse] = React.useState([]);
   const [listRoom, setListRoom] = React.useState([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -154,7 +152,6 @@ const Booking = () => {
     },
   ]);
   React.useEffect(() => {
-    setTitle("CỌC PHÒNG");
     handleSearch();
     GetListHouse();
     GetListRoom();
@@ -258,9 +255,7 @@ const Booking = () => {
       const listRow = rows.filter((obj) =>
         validate.validate.some((val) => obj.STT === val.STT)
       );
-      console.log(listRow);
       const result = await save({ datas: listRow });
-      console.log(result);
       if (result.success) {
         result.data.message.map((item) =>
           item.success
@@ -289,7 +284,7 @@ const Booking = () => {
   const handleChange = () => {};
   return (
     <>
-      <Row gutter={[8, 16]}>
+      <Row gutter={[0, 16]}>
         <Col span={24}>
           <Card style={{ padding: "12px" }}>
             <Row gutter={[8, 8]}>
