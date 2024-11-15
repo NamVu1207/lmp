@@ -22,6 +22,7 @@ import Order from "./Pages/Order/Order.jsx";
 import Home from "./Pages/Home/Home.jsx";
 import Info from "./Pages/Home/Info.jsx";
 import Contact from "./Pages/Home/Contact.jsx";
+import Setting from "./Pages/Setting/Setting.jsx";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
         children: [
           { path: "", element: <CustomerService /> },
           { path: "Order", element: <Order /> },
+          { path: "Setting", element: <Setting /> },
         ],
       },
       {

@@ -18,7 +18,7 @@ export default function DefaultLayout() {
     const storedUser = localStorage.getItem("user");
     const parsedUser = JSON.parse(storedUser);
     if (parsedUser) setIsLogin(true);
-    // getCityData();
+    getCityData();
   }, []);
 
   const getCityData = async () => {

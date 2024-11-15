@@ -20,3 +20,8 @@ export const save = async (datas) => {
   const result = await poster(cpath("save"), datas);
   return result;
 };
+
+export const changePassword = async (datas) => {
+  const result = await poster(cpath("changepass"), datas);
+  return result;
+};

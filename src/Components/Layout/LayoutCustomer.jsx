@@ -41,7 +41,7 @@ const LayoutCustomer = () => {
     {
       key: "3",
       name: "Setting",
-      label: <Link to={"/manager/DataEW"}>Cài đặt</Link>,
+      label: <Link to={"/customer/Setting"}>Cài đặt</Link>,
       icon: <MessageFilled />,
     },
   ];
