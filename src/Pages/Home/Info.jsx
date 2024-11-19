@@ -9,7 +9,7 @@ const Info = () => {
     city: [],
     district: [],
     ward: [],
-    selectedCity: "79",
+    selectedCity: "",
     // selectedKey: "",
   });
 
@@ -21,7 +21,6 @@ const Info = () => {
   React.useEffect(() => {
     // Khởi tạo dữ liệu thành phố và quận khi component mount
     getCityData();
-    getDistrictData("79");
   }, []);
 
   React.useEffect(() => {
@@ -41,7 +40,16 @@ const Info = () => {
   const getCityData = async () => {
     const result = await getCity();
     const validCity = await getListCity();
+    console.log("validCity", validCity);
+
+    setLocationData((prev) => ({
+      ...prev,
+      selectedCity: validCity.data[0].city,
+    }));
+    getDistrictData(validCity.data[0].city);
+
     const filteredCities = filterData(result.data, validCity.data, "city");
+    console.log(formatLocationData(filteredCities));
     setLocationData((prev) => ({
       ...prev,
       city: formatLocationData(filteredCities),
