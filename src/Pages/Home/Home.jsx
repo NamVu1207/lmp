@@ -8,8 +8,13 @@ import {
 const Home = () => {
   return (
     <>
-      <Row style={{ padding: "50px" }} justify={"center"} align={"middle"}>
-        <Col span={8}>
+      <Row
+        gutter={[0, 60]}
+        style={{ padding: "50px", marginBottom: "60px" }}
+        justify={"center"}
+        align={"middle"}
+      >
+        <Col xl={{ span: 8 }}>
           <Row gutter={[0, 24]}>
             <Col span={24}>
               <Typography
@@ -100,9 +105,9 @@ const Home = () => {
             </Col>
           </Row>
         </Col>
-        <Col span={16}>
+        <Col xl={{ span: 16 }}>
           <Row gutter={[16, 0]} align={"middle"} justify={"center"}>
-            <Col span={4}>
+            <Col span={5}>
               <Row gutter={[0, 16]}>
                 <Col span={24}>
                   <img src="./homeImg2.png" style={{ width: "100%" }} />
@@ -115,15 +120,15 @@ const Home = () => {
                 </Col>
               </Row>
             </Col>
-            <Col span={16}>
-              <img src="./homeImg1.jpg" />
+            <Col span={17}>
+              <img style={{ width: "100%" }} src="./homeImg1.jpg" />
             </Col>
           </Row>
         </Col>
       </Row>
       <div
         style={{
-          position: "absolute",
+          position: "fixed",
           bottom: "0",
           width: "100vw",
           backgroundColor: "#00b2bc",

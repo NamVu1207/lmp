@@ -255,10 +255,6 @@ const ModalCreateContract = ({
       message.warning("vui lòng điền đầy đủ thông tin!");
       return false;
     }
-    if (validate.validate.length === 0) {
-      message.warning("không có gì thay đổi");
-      return false;
-    }
     return true;
   };
 
